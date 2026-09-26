@@ -44,7 +44,7 @@ A traveler planning a trip knows the destination and day count, but turning that
 | --- | --- | --- | --- | --- | --- |
 | F-01 | trip-data-schema | (foundation) minimal `trips` + `trip_points` schema exists, with per-user RLS policies | — | Access Control, FR-005, FR-006 | done |
 | F-02 | production-deploy-pipeline | (foundation) `wrangler deploy` wired into CI/CD with secrets configured so the app is actually publicly reachable | — | FR-001 (Socrates rationale) | done |
-| S-01 | generate-and-save-trip-plan | user enters a city + day count, reviews an AI-generated day-grouped plan, accepts it, and sees it in their trip panel | F-01 | US-01, FR-001, FR-002, FR-003, FR-004, FR-005, FR-006 | proposed |
+| S-01 | generate-and-save-trip-plan | user enters a city + day count, reviews an AI-generated day-grouped plan, accepts it, and sees it in their trip panel | F-01 | US-01, FR-001, FR-002, FR-003, FR-004, FR-005, FR-006 | in-progress |
 | S-02 | edit-trip-points | user adds their own sightseeing points to a saved trip and edits existing points | S-01 | FR-007, FR-008 | proposed |
 | S-03 | delete-trip-points-and-trips | user deletes a single point from a saved trip, or deletes an entire saved trip | S-01 | FR-009, FR-010 | proposed |
 
@@ -110,7 +110,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** This is the north star and the largest slice by must-have FR count (six of them) — the main risk is scope creep into the nice-to-have editing/deletion features during implementation, which the tight after-hours schedule can't absorb.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-02: User edits an accepted plan's points
 
