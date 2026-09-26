@@ -79,7 +79,7 @@ const scriptsConfig = defineConfig({
 
 export default defineConfig(
   includeIgnoreFile(gitignorePath),
-  { ignores: ["src/db/database.types.ts"] },
+  { ignores: ["src/db/database.types.ts", ".claude/**"] },
   baseConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
