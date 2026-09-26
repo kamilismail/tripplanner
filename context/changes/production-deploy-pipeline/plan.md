@@ -232,9 +232,9 @@ Not applicable — no data migration involved.
 
 #### Automated
 
-- [x] 3.1 A push to master results in a deploy job that waits for approval, then runs, then passes its health check
+- [x] 3.1 A push to master results in a deploy job that waits for approval, then runs, then passes its health check — f3a92bf
 
 #### Manual
 
-- [x] 3.2 Approve a real deployment end-to-end and confirm the production URL reflects the deployed commit
-- [x] 3.3 Confirm the failure path (red job, no auto-rollback) matches expectations
+- [x] 3.2 Approve a real deployment end-to-end and confirm the production URL reflects the deployed commit — f3a92bf
+- [x] 3.3 Confirm the failure path (red job, no auto-rollback) matches expectations — f3a92bf
