@@ -42,7 +42,7 @@ A traveler planning a trip knows the destination and day count, but turning that
 
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
-| F-01 | trip-data-schema | (foundation) minimal `trips` + `trip_points` schema exists, with per-user RLS policies | — | Access Control, FR-005, FR-006 | ready |
+| F-01 | trip-data-schema | (foundation) minimal `trips` + `trip_points` schema exists, with per-user RLS policies | — | Access Control, FR-005, FR-006 | done |
 | F-02 | production-deploy-pipeline | (foundation) `wrangler deploy` wired into CI/CD with secrets configured so the app is actually publicly reachable | — | FR-001 (Socrates rationale) | ready |
 | S-01 | generate-and-save-trip-plan | user enters a city + day count, reviews an AI-generated day-grouped plan, accepts it, and sees it in their trip panel | F-01 | US-01, FR-001, FR-002, FR-003, FR-004, FR-005, FR-006 | proposed |
 | S-02 | edit-trip-points | user adds their own sightseeing points to a saved trip and edits existing points | S-01 | FR-007, FR-008 | proposed |
@@ -83,7 +83,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Schema and RLS choices here are load-bearing for every downstream trip feature — getting per-user isolation right the first time matters more than speed, since S-01 can't be planned without a persistence target.
-- **Status:** ready
+- **Status:** done
 
 ### F-02: Production deploy pipeline
 
@@ -165,4 +165,4 @@ _Empty — this is the first milestone._
 
 ## Done
 
-_Empty — `/10x-archive` appends here when a change matching a Change ID above is archived._
+- **F-01: (foundation) minimal `trips` + `trip_points` schema exists, with per-user RLS policies** — Archived 2026-09-26 → `context/archive/2026-09-26-trip-data-schema/`. Lesson: —.
