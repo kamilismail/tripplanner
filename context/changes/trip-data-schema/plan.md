@@ -174,11 +174,11 @@ Not applicable — this is a brand-new schema with no existing data to migrate.
 
 #### Automated
 
-- [x] 2.1 Type generation succeeds
-- [x] 2.2 Type checking passes
+- [x] 2.1 Type generation succeeds — ee969e8
+- [x] 2.2 Type checking passes — ee969e8
 - [ ] 2.3 Lint passes (skipped — pre-existing repo-wide CRLF line-ending failures unrelated to this phase; files touched here are clean)
 
 #### Manual
 
-- [x] 2.4 Generated types file matches migrated schema
-- [x] 2.5 Trip/TripPoint types importable end to end
+- [x] 2.4 Generated types file matches migrated schema — ee969e8
+- [x] 2.5 Trip/TripPoint types importable end to end — ee969e8
