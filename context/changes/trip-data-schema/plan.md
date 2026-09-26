@@ -162,23 +162,23 @@ Not applicable — this is a brand-new schema with no existing data to migrate.
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly against local Supabase
+- [x] 1.1 Migration applies cleanly against local Supabase — 1a0587c
 - [ ] 1.2 Lint passes
 
 #### Manual
 
-- [x] 1.3 Both tables exist with RLS enabled, verified via Supabase Studio/psql
-- [x] 1.4 Cross-user isolation verified (user B cannot see user A's trips/points) and trigger-derived `user_id` verified on trip_points
+- [x] 1.3 Both tables exist with RLS enabled, verified via Supabase Studio/psql — 1a0587c
+- [x] 1.4 Cross-user isolation verified (user B cannot see user A's trips/points) and trigger-derived `user_id` verified on trip_points — 1a0587c
 
 ### Phase 2: TypeScript types
 
 #### Automated
 
-- [ ] 2.1 Type generation succeeds
-- [ ] 2.2 Type checking passes
-- [ ] 2.3 Lint passes
+- [x] 2.1 Type generation succeeds
+- [x] 2.2 Type checking passes
+- [ ] 2.3 Lint passes (skipped — pre-existing repo-wide CRLF line-ending failures unrelated to this phase; files touched here are clean)
 
 #### Manual
 
-- [ ] 2.4 Generated types file matches migrated schema
-- [ ] 2.5 Trip/TripPoint types importable end to end
+- [x] 2.4 Generated types file matches migrated schema
+- [x] 2.5 Trip/TripPoint types importable end to end
