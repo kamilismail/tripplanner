@@ -211,9 +211,9 @@ Not applicable — no data migration involved.
 
 #### Manual
 
-- [x] 1.1 CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are present as secrets on the GitHub production Environment (or repo-level)
-- [x] 1.2 The production Environment has a required-reviewer protection rule configured
-- [x] 1.3 wrangler secret list confirms SUPABASE_URL and SUPABASE_KEY already exist as production Workers Secrets
+- [x] 1.1 CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are present as secrets on the GitHub production Environment (or repo-level) — 1213d8f
+- [x] 1.2 The production Environment has a required-reviewer protection rule configured — 1213d8f
+- [x] 1.3 wrangler secret list confirms SUPABASE_URL and SUPABASE_KEY already exist as production Workers Secrets — 1213d8f
 
 ### Phase 2: `deploy` job in CI workflow
 
