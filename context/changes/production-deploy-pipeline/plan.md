@@ -219,22 +219,22 @@ Not applicable — no data migration involved.
 
 #### Automated
 
-- [x] 2.1 deploy job appears in the Actions run for a push to master, pending approval, once ci and smoke are both green
-- [x] 2.2 After approval, npm run build step in the deploy job succeeds
-- [x] 2.3 Health-check step exits 0 when the production URL is reachable
+- [x] 2.1 deploy job appears in the Actions run for a push to master, pending approval, once ci and smoke are both green — 53548e7
+- [x] 2.2 After approval, npm run build step in the deploy job succeeds — 53548e7
+- [x] 2.3 Health-check step exits 0 when the production URL is reachable — 53548e7
 
 #### Manual
 
-- [x] 2.4 Approving the deployment in the GitHub UI is required before wrangler deploy runs
-- [x] 2.5 A pull-request run of the same workflow does NOT create a pending deploy approval
+- [x] 2.4 Approving the deployment in the GitHub UI is required before wrangler deploy runs — 53548e7
+- [x] 2.5 A pull-request run of the same workflow does NOT create a pending deploy approval — 53548e7
 
 ### Phase 3: End-to-end verification
 
 #### Automated
 
-- [ ] 3.1 A push to master results in a deploy job that waits for approval, then runs, then passes its health check
+- [x] 3.1 A push to master results in a deploy job that waits for approval, then runs, then passes its health check
 
 #### Manual
 
-- [ ] 3.2 Approve a real deployment end-to-end and confirm the production URL reflects the deployed commit
-- [ ] 3.3 Confirm the failure path (red job, no auto-rollback) matches expectations
+- [x] 3.2 Approve a real deployment end-to-end and confirm the production URL reflects the deployed commit
+- [x] 3.3 Confirm the failure path (red job, no auto-rollback) matches expectations
