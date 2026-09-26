@@ -1,7 +1,8 @@
 ---
 change_id: production-deploy-pipeline
 title: Production deploy pipeline
-status: impl_reviewed
+status: archived
+archived_at: 2026-09-26T16:03:12Z
 created: 2026-09-26
 updated: 2026-09-26
 ---
