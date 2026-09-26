@@ -43,7 +43,7 @@ A traveler planning a trip knows the destination and day count, but turning that
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
 | F-01 | trip-data-schema | (foundation) minimal `trips` + `trip_points` schema exists, with per-user RLS policies | — | Access Control, FR-005, FR-006 | done |
-| F-02 | production-deploy-pipeline | (foundation) `wrangler deploy` wired into CI/CD with secrets configured so the app is actually publicly reachable | — | FR-001 (Socrates rationale) | ready |
+| F-02 | production-deploy-pipeline | (foundation) `wrangler deploy` wired into CI/CD with secrets configured so the app is actually publicly reachable | — | FR-001 (Socrates rationale) | done |
 | S-01 | generate-and-save-trip-plan | user enters a city + day count, reviews an AI-generated day-grouped plan, accepts it, and sees it in their trip panel | F-01 | US-01, FR-001, FR-002, FR-003, FR-004, FR-005, FR-006 | proposed |
 | S-02 | edit-trip-points | user adds their own sightseeing points to a saved trip and edits existing points | S-01 | FR-007, FR-008 | proposed |
 | S-03 | delete-trip-points-and-trips | user deletes a single point from a saved trip, or deletes an entire saved trip | S-01 | FR-009, FR-010 | proposed |
@@ -96,7 +96,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** `top_blocker` is capacity (an October gap before an intensive November) — wiring the real deploy step now, in parallel with S-01, surfaces `nodejs_compat`/secrets surprises while there's still slack to debug them, instead of during the pre-deadline crunch.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -166,3 +166,4 @@ _Empty — this is the first milestone._
 ## Done
 
 - **F-01: (foundation) minimal `trips` + `trip_points` schema exists, with per-user RLS policies** — Archived 2026-09-26 → `context/archive/2026-09-26-trip-data-schema/`. Lesson: —.
+- **F-02: (foundation) `wrangler deploy` wired into CI/CD with secrets configured so the app is actually publicly reachable** — Archived 2026-09-26 → `context/archive/2026-09-26-production-deploy-pipeline/`. Lesson: —.
