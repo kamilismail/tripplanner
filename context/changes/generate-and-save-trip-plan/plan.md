@@ -350,15 +350,15 @@ Not applicable — no existing trip data to migrate; this is the first slice tha
 
 #### Automated
 
-- [x] 2.1 Type checking passes
-- [x] 2.2 Linting passes
+- [x] 2.1 Type checking passes — 8f458a4
+- [x] 2.2 Linting passes — 8f458a4
 
 #### Manual
 
-- [x] 2.3 `POST /api/trips/generate` returns a correct plan for valid input and a 400 for `day_count` outside 1–14
-- [x] 2.4 `POST /api/trips` persists a trip and its points, with `trip_points.user_id` correctly trigger-derived
-- [x] 2.5 `GET /api/trips` returns only the requesting user's trips
-- [x] 2.6 Unauthenticated requests to the trips page/API are rejected
+- [x] 2.3 `POST /api/trips/generate` returns a correct plan for valid input and a 400 for `day_count` outside 1–14 — 8f458a4
+- [x] 2.4 `POST /api/trips` persists a trip and its points, with `trip_points.user_id` correctly trigger-derived — 8f458a4
+- [x] 2.5 `GET /api/trips` returns only the requesting user's trips — 8f458a4
+- [x] 2.6 Unauthenticated requests to the trips page/API are rejected — 8f458a4
 
 ### Phase 3: Generation and review UI
 

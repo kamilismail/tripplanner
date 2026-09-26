@@ -55,45 +55,54 @@ export const POST: APIRoute = async (context) => {
 
   const userId = context.locals.user.id;
 
-  const { data: trip, error: tripError } = await supabase
-    .from("trips")
-    .insert({ user_id: userId, city, day_count })
-    .select()
-    .single();
+  try {
+    const { data: trip, error: tripError } = await supabase
+      .from("trips")
+      .insert({ user_id: userId, city, day_count })
+      .select()
+      .single();
 
-  if (tripError) {
-    return new Response(JSON.stringify({ error: "save_failed" }), {
+    if (tripError) {
+      return new Response(JSON.stringify({ error: "save_failed" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const pointsToInsert = days.flatMap((day) =>
+      day.points.map((point, index) => ({
+        trip_id: trip.id,
+        // Overwritten server-side by the set_trip_points_user_id trigger; passed
+        // only because the generated Insert type requires it non-optionally.
+        user_id: userId,
+        day_number: day.day_number,
+        order_index: index,
+        name: point.name,
+        description: point.description,
+        latitude: point.latitude,
+        longitude: point.longitude,
+      })),
+    );
+
+    const { data: tripPoints, error: pointsError } = await supabase.from("trip_points").insert(pointsToInsert).select();
+
+    if (pointsError) {
+      return new Response(JSON.stringify({ error: "save_failed" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ ...trip, trip_points: tripPoints }), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch {
+    return new Response(JSON.stringify({ error: "unexpected_error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
-
-  const pointsToInsert = days.flatMap((day) =>
-    day.points.map((point, index) => ({
-      trip_id: trip.id,
-      user_id: userId,
-      day_number: day.day_number,
-      order_index: index,
-      name: point.name,
-      description: point.description,
-      latitude: point.latitude,
-      longitude: point.longitude,
-    })),
-  );
-
-  const { data: tripPoints, error: pointsError } = await supabase.from("trip_points").insert(pointsToInsert).select();
-
-  if (pointsError) {
-    return new Response(JSON.stringify({ error: "save_failed" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  return new Response(JSON.stringify({ ...trip, trip_points: tripPoints }), {
-    status: 201,
-    headers: { "Content-Type": "application/json" },
-  });
 };
 
 export const GET: APIRoute = async (context) => {

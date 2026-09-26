@@ -50,6 +50,9 @@ export const POST: APIRoute = async (context) => {
         headers: { "Content-Type": "application/json" },
       });
     }
-    throw error;
+    return new Response(JSON.stringify({ error: "unexpected_error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
