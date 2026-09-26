@@ -336,15 +336,15 @@ Not applicable — no existing trip data to migrate; this is the first slice tha
 
 #### Automated
 
-- [x] 1.1 Type checking passes
-- [x] 1.2 Linting passes
+- [x] 1.1 Type checking passes — 85bf653
+- [x] 1.2 Linting passes — 85bf653
 
 #### Manual
 
-- [x] 1.3 `generateItinerary` returns a valid N-day plan for a real city
-- [x] 1.4 An invalid/nonsense city still returns a schema-valid response
-- [x] 1.5 An invalid API key causes a typed error, not an unhandled exception
-- [x] 1.6 A safety-filter-blocked response causes a typed `invalid_response` error, not an unhandled exception
+- [x] 1.3 `generateItinerary` returns a valid N-day plan for a real city — 85bf653
+- [x] 1.4 An invalid/nonsense city still returns a schema-valid response — 85bf653
+- [x] 1.5 An invalid API key causes a typed error, not an unhandled exception — 85bf653
+- [x] 1.6 A safety-filter-blocked response causes a typed `invalid_response` error, not an unhandled exception — 85bf653
 
 ### Phase 2: Trip API routes
 
