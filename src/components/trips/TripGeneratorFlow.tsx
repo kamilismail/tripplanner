@@ -7,13 +7,13 @@ import { ServerError } from "@/components/auth/ServerError";
 import { useTripGenerationForm } from "@/components/hooks/useTripGenerationForm";
 import { MAX_TRIP_DAYS, MIN_TRIP_DAYS } from "@/lib/services/itinerary-schema";
 import { cn } from "@/lib/utils";
-import type { ApiErrorResponse, GeneratedTripPlan, GenerateTripRequest } from "@/types";
+import type { ApiErrorResponse, GeneratedTripPlan, GenerateTripRequest, TripWithPoints } from "@/types";
 
 type Status = "idle" | "loading" | "review" | "error";
 
 interface Props {
-  /** Called after a plan has been accepted and saved (Phase 4 hooks the trip-list refresh here). */
-  onTripSaved?: () => void;
+  /** Called after a plan has been accepted and saved, with the persisted trip (`null` if the response was unreadable). */
+  onTripSaved?: (trip: TripWithPoints | null) => void;
 }
 
 const inputClass =
@@ -27,6 +27,16 @@ async function readErrorCode(response: Response): Promise<string | undefined> {
     return body?.error;
   } catch {
     return undefined;
+  }
+}
+
+/** The 201 body of `POST /api/trips` is the persisted trip with its points; `null` if it can't be read. */
+async function readSavedTrip(response: Response): Promise<TripWithPoints | null> {
+  try {
+    const body = (await response.json()) as Partial<TripWithPoints> | null;
+    return body && typeof body.id === "string" && Array.isArray(body.trip_points) ? (body as TripWithPoints) : null;
+  } catch {
+    return null;
   }
 }
 
@@ -130,12 +140,14 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
         return;
       }
 
+      const savedTrip = await readSavedTrip(response);
+
       setPlan(null);
       setSubmitted(null);
       form.reset();
       setSuccessMessage(`Your ${plan.day_count}-day trip to ${plan.city} has been saved.`);
       setStatus("idle");
-      onTripSaved?.();
+      onTripSaved?.(savedTrip);
     } catch {
       setSaveError(NETWORK_ERROR);
     } finally {

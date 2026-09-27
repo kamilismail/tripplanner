@@ -4,6 +4,9 @@ import type { ItineraryDay } from "@/lib/services/itinerary-schema";
 export type Trip = Database["public"]["Tables"]["trips"]["Row"];
 export type TripPoint = Database["public"]["Tables"]["trip_points"]["Row"];
 
+/** A saved trip with its points, as returned by `GET /api/trips` (points are unordered). */
+export type TripWithPoints = Trip & { trip_points: TripPoint[] };
+
 /** Body of `POST /api/trips/generate`. */
 export interface GenerateTripRequest {
   city: string;
