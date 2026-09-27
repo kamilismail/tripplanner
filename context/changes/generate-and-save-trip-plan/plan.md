@@ -379,15 +379,15 @@ Not applicable — no existing trip data to migrate; this is the first slice tha
 
 #### Automated
 
-- [x] 4.1 Type checking passes
-- [x] 4.2 Linting passes
+- [x] 4.1 Type checking passes — 9fc9cb8
+- [x] 4.2 Linting passes — 9fc9cb8
 
 #### Manual
 
-- [x] 4.3 Empty state renders with no saved trips
-- [x] 4.4 Newly accepted trip appears at the top of the list without a manual reload
-- [x] 4.5 Multiple trips/points render correctly grouped by day
-- [x] 4.6 A second user never sees the first user's trips
+- [x] 4.3 Empty state renders with no saved trips — 9fc9cb8
+- [x] 4.4 Newly accepted trip appears at the top of the list without a manual reload — 9fc9cb8
+- [x] 4.5 Multiple trips/points render correctly grouped by day — 9fc9cb8
+- [x] 4.6 A second user never sees the first user's trips — 9fc9cb8
 
 ### Phase 5: End-to-end verification
 

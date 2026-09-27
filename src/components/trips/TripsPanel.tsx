@@ -40,7 +40,7 @@ export default function TripsPanel({ children }: Props) {
         <h2 id="saved-trips-heading" className="mb-6 text-2xl font-semibold text-white">
           Your trips
         </h2>
-        <TripList trips={trips} isLoading={isLoading} error={error} newTripId={newTripId} />
+        <TripList trips={trips} isLoading={isLoading} error={error} newTripId={newTripId} onRetry={refresh} />
       </section>
     </div>
   );

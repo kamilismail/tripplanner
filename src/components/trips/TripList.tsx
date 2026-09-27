@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, ChevronDown, MapPin } from "lucide-react";
+import { CalendarDays, ChevronDown, MapPin, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { ServerError } from "@/components/auth/ServerError";
 import type { UseTripsResult } from "@/components/hooks/useTrips";
@@ -9,6 +10,8 @@ import type { TripPoint, TripWithPoints } from "@/types";
 type Props = Pick<UseTripsResult, "trips" | "isLoading" | "error"> & {
   /** Id of the trip saved in this visit; it starts expanded, is scrolled into view and briefly highlighted. */
   newTripId?: string | null;
+  /** Re-fetches the list after a failed load. */
+  onRetry: () => void;
 };
 
 interface TripDay {
@@ -35,10 +38,10 @@ function plural(count: number, one: string, many: string): string {
   return `${count} ${count === 1 ? one : many}`;
 }
 
-export default function TripList({ trips, isLoading, error, newTripId = null }: Props) {
+export default function TripList({ trips, isLoading, error, newTripId = null, onRetry }: Props) {
   // First load: nothing to show yet.
   if (trips === null) {
-    if (error) return <ServerError message={error} />;
+    if (error && !isLoading) return <ListError message={error} isLoading={isLoading} onRetry={onRetry} />;
     return (
       <p role="status" className="flex items-center gap-2 text-sm text-blue-100/70">
         <Spinner className="text-purple-300" />
@@ -50,7 +53,7 @@ export default function TripList({ trips, isLoading, error, newTripId = null }: 
   return (
     <div className="space-y-4" aria-busy={isLoading}>
       {/* A failed refresh keeps the last list visible and reports the error above it. */}
-      <ServerError message={error} />
+      {error && <ListError message={error} isLoading={isLoading} onRetry={onRetry} />}
 
       {trips.length === 0 ? (
         <p className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-blue-100/70">
@@ -63,6 +66,23 @@ export default function TripList({ trips, isLoading, error, newTripId = null }: 
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+function ListError({ message, isLoading, onRetry }: { message: string; isLoading: boolean; onRetry: () => void }) {
+  return (
+    <div className="space-y-3">
+      <ServerError message={message} />
+      <Button
+        type="button"
+        onClick={onRetry}
+        disabled={isLoading}
+        className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20"
+      >
+        {isLoading ? <Spinner /> : <RotateCcw className="size-4" />}
+        {isLoading ? "Retrying..." : "Try again"}
+      </Button>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { TripWithPoints } from "@/types";
 
 export interface UseTripsResult {
@@ -24,6 +24,8 @@ export function useTrips(): UseTripsResult {
   // The refreshKey whose fetch last settled; loading is derived rather than set inside the effect.
   const [settledKey, setSettledKey] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Trips added locally after a save; kept on top if a fetch that started before the save resolves without them.
+  const addedTripsRef = useRef<TripWithPoints[]>([]);
 
   useEffect(() => {
     // Aborting on re-run/unmount keeps a slower, older response from overwriting a newer one.
@@ -47,7 +49,11 @@ export function useTrips(): UseTripsResult {
           return;
         }
 
-        setTrips(body as TripWithPoints[]);
+        const fetched = body as TripWithPoints[];
+        const fetchedIds = new Set(fetched.map((t) => t.id));
+        // Once the server returns a locally added trip, it no longer needs protecting.
+        addedTripsRef.current = addedTripsRef.current.filter((t) => !fetchedIds.has(t.id));
+        setTrips([...addedTripsRef.current, ...fetched]);
         setError(null);
       } catch {
         if (controller.signal.aborted) return;
@@ -64,6 +70,7 @@ export function useTrips(): UseTripsResult {
   }, [refreshKey]);
 
   const addTrip = useCallback((trip: TripWithPoints) => {
+    addedTripsRef.current = [trip, ...addedTripsRef.current.filter((t) => t.id !== trip.id)];
     setTrips((current) => [trip, ...(current ?? []).filter((t) => t.id !== trip.id)]);
   }, []);
 
