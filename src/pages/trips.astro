@@ -1,0 +1,23 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import TripGeneratorFlow from "@/components/trips/TripGeneratorFlow";
+
+const { user } = Astro.locals;
+---
+
+<Layout title="Trips">
+  <div class="bg-cosmic flex min-h-screen justify-center p-4 py-12">
+    <div class="w-full max-w-2xl space-y-6">
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+        <h1 class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+          Plan a trip
+        </h1>
+        <p class="mb-6 text-sm text-blue-100/60">
+          Signed in as <span class="font-semibold text-white">{user?.email}</span>. Pick a city and how many days you
+          have — we'll draft an itinerary for you to review.
+        </p>
+        <TripGeneratorFlow client:load />
+      </div>
+    </div>
+  </div>
+</Layout>

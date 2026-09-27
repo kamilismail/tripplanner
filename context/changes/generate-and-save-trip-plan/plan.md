@@ -364,16 +364,16 @@ Not applicable — no existing trip data to migrate; this is the first slice tha
 
 #### Automated
 
-- [ ] 3.1 Type checking passes
-- [ ] 3.2 Linting passes
+- [x] 3.1 Type checking passes
+- [x] 3.2 Linting passes
 
 #### Manual
 
-- [ ] 3.3 Submitting valid input shows continuous loading feedback, then a correct review screen
-- [ ] 3.4 Day count outside 1–14 is prevented client-side
-- [ ] 3.5 Accept saves the trip and returns to a ready-to-generate state
-- [ ] 3.6 Discard returns to the form with prior input retained, without saving
-- [ ] 3.7 A forced Gemini failure shows a readable error with a working retry
+- [x] 3.3 Submitting valid input shows continuous loading feedback, then a correct review screen
+- [x] 3.4 Day count outside 1–14 is prevented client-side
+- [x] 3.5 Accept saves the trip and returns to a ready-to-generate state
+- [x] 3.6 Discard returns to the form with prior input retained, without saving
+- [x] 3.7 A forced Gemini failure shows a readable error with a working retry
 
 ### Phase 4: Trip panel
 
