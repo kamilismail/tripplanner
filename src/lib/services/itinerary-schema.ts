@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+/** Day-count bounds shared by the API schemas and the client-side form validation. */
+export const MIN_TRIP_DAYS = 1;
+export const MAX_TRIP_DAYS = 14;
+
 /**
  * Single source of truth for the itinerary shape returned by Gemini.
  *

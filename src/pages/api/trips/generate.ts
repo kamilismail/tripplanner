@@ -1,12 +1,13 @@
 import { z } from "zod";
 import type { APIRoute } from "astro";
 import { generateItinerary, ItineraryGenerationError } from "@/lib/services/gemini";
+import { MAX_TRIP_DAYS, MIN_TRIP_DAYS } from "@/lib/services/itinerary-schema";
 
 export const prerender = false;
 
 const generateRequestSchema = z.object({
-  city: z.string().min(1),
-  day_count: z.number().int().min(1).max(14),
+  city: z.string().trim().min(1).max(100),
+  day_count: z.number().int().min(MIN_TRIP_DAYS).max(MAX_TRIP_DAYS),
 });
 
 export const POST: APIRoute = async (context) => {

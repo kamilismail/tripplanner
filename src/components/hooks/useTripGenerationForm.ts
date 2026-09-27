@@ -1,9 +1,6 @@
 import { useCallback, useState } from "react";
+import { MAX_TRIP_DAYS, MIN_TRIP_DAYS } from "@/lib/services/itinerary-schema";
 import type { GenerateTripRequest } from "@/types";
-
-/** Mirrors the 1–14 bound enforced server-side by `/api/trips/generate` and `/api/trips`. */
-export const MIN_TRIP_DAYS = 1;
-export const MAX_TRIP_DAYS = 14;
 
 function parseDayCount(raw: string): number | null {
   if (!/^\d+$/.test(raw.trim())) return null;
