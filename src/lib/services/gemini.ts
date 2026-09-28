@@ -21,15 +21,18 @@ const geminiEnvelopeSchema = z.object({
     .optional(),
 });
 
-const GEMINI_ENDPOINT =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent";
+const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent";
+
+const MAX_UNAVAILABLE_RETRIES = 5;
+const UNAVAILABLE_RETRY_DELAY_MS = 1_000;
 
 /**
  * Distinguishable failure mode for `generateItinerary`, so callers (the API
  * routes in Phase 2) can map every failure to the same "generation failed"
  * response without leaking raw Gemini errors to the client.
  *
- * - `upstream`: the HTTP call itself failed (non-2xx, network error, timeout).
+ * - `upstream`: the HTTP call itself failed (non-2xx, network error, timeout),
+ *   or kept returning 503 after `MAX_UNAVAILABLE_RETRIES` retries.
  * - `invalid_response`: Gemini answered 200 but the payload was missing,
  *   blocked, malformed JSON, or failed schema/semantic validation.
  */
@@ -75,25 +78,41 @@ export async function generateItinerary(city: string, dayCount: number): Promise
     throw new ItineraryGenerationError("GEMINI_API_KEY is not configured.", "upstream");
   }
 
+  const requestBody = JSON.stringify({
+    contents: [{ parts: [{ text: buildPrompt(city, dayCount) }] }],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: itineraryResponseSchema,
+    },
+  });
+
+  // Gemini answers HTTP 503 ("model is currently experiencing high demand")
+  // for short demand spikes, usually within a second, so the request is
+  // retried a few times before the user sees an error. Other failures
+  // (timeouts, 4xx, other 5xx) are not retried: a timeout already cost 20 s.
   let response: Response;
-  try {
-    response = await fetch(GEMINI_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": GEMINI_API_KEY,
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: buildPrompt(city, dayCount) }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: itineraryResponseSchema,
+  let attempt = 0;
+  for (;;) {
+    try {
+      response = await fetch(GEMINI_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY,
         },
-      }),
-      signal: AbortSignal.timeout(20_000),
-    });
-  } catch {
-    throw new ItineraryGenerationError("Failed to reach the Gemini API.", "upstream");
+        body: requestBody,
+        signal: AbortSignal.timeout(20_000),
+      });
+    } catch {
+      throw new ItineraryGenerationError("Failed to reach the Gemini API.", "upstream");
+    }
+
+    if (response.status !== 503 || attempt >= MAX_UNAVAILABLE_RETRIES) {
+      break;
+    }
+    attempt++;
+    await response.body?.cancel();
+    await new Promise((resolve) => setTimeout(resolve, UNAVAILABLE_RETRY_DELAY_MS));
   }
 
   if (!response.ok) {
