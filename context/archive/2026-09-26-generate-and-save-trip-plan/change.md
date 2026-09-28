@@ -1,10 +1,10 @@
 ---
 change_id: generate-and-save-trip-plan
 title: Generate and save a trip plan
-status: impl_reviewed
+status: archived
 created: 2026-09-26
 updated: 2026-09-28
-archived_at: null
+archived_at: 2026-09-28T14:37:56Z
 ---
 
 ## Notes
