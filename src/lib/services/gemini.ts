@@ -23,8 +23,12 @@ const geminiEnvelopeSchema = z.object({
 
 const GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent";
 
+const ATTEMPT_TIMEOUT_MS = 20_000;
 const MAX_UNAVAILABLE_RETRIES = 5;
 const UNAVAILABLE_RETRY_DELAY_MS = 1_000;
+// Upper bound for all attempts together, so slow 503s can't stack up to
+// 6 × ATTEMPT_TIMEOUT_MS of loading state.
+const GENERATION_DEADLINE_MS = 60_000;
 
 /**
  * Distinguishable failure mode for `generateItinerary`, so callers (the API
@@ -32,7 +36,8 @@ const UNAVAILABLE_RETRY_DELAY_MS = 1_000;
  * response without leaking raw Gemini errors to the client.
  *
  * - `upstream`: the HTTP call itself failed (non-2xx, network error, timeout),
- *   or kept returning 503 after `MAX_UNAVAILABLE_RETRIES` retries.
+ *   or kept returning 503 until `MAX_UNAVAILABLE_RETRIES` retries or
+ *   `GENERATION_DEADLINE_MS` ran out.
  * - `invalid_response`: Gemini answered 200 but the payload was missing,
  *   blocked, malformed JSON, or failed schema/semantic validation.
  */
@@ -65,7 +70,7 @@ function buildPrompt(city: string, dayCount: number): string {
     `Create a detailed ${dayCount}-day travel itinerary for the city below. ` +
     `Group points of interest by day, numbering days 1 through ${dayCount} with no gaps or repeats. ` +
     `For each point of interest, include its name and, when known, a short description and its latitude/longitude. ` +
-    `Write the "name" and "description" fields in Polish. ` +
+    `Write the "name" and "description" fields in English. ` +
     `Set "city_recognized" to false if the city below is not a real, recognizable geographic place (city, town, or ` +
     `region) that actually exists — do not invent a place for it. When "city_recognized" is false, still return ` +
     `exactly one day with one placeholder point so the response stays schema-valid.\n\n` +
@@ -90,6 +95,8 @@ export async function generateItinerary(city: string, dayCount: number): Promise
   // for short demand spikes, usually within a second, so the request is
   // retried a few times before the user sees an error. Other failures
   // (timeouts, 4xx, other 5xx) are not retried: a timeout already cost 20 s.
+  // All attempts share one deadline.
+  const deadline = Date.now() + GENERATION_DEADLINE_MS;
   let response: Response;
   let attempt = 0;
   for (;;) {
@@ -101,21 +108,25 @@ export async function generateItinerary(city: string, dayCount: number): Promise
           "x-goog-api-key": GEMINI_API_KEY,
         },
         body: requestBody,
-        signal: AbortSignal.timeout(20_000),
+        signal: AbortSignal.timeout(Math.max(0, Math.min(ATTEMPT_TIMEOUT_MS, deadline - Date.now()))),
       });
     } catch {
       throw new ItineraryGenerationError("Failed to reach the Gemini API.", "upstream");
     }
 
-    if (response.status !== 503 || attempt >= MAX_UNAVAILABLE_RETRIES) {
+    // Jittered (0.5–1.5 × base) so concurrent requests don't retry in lockstep.
+    const retryDelay = UNAVAILABLE_RETRY_DELAY_MS * (0.5 + Math.random());
+    const canRetry = attempt < MAX_UNAVAILABLE_RETRIES && Date.now() + retryDelay < deadline;
+    if (response.status !== 503 || !canRetry) {
       break;
     }
     attempt++;
     await response.body?.cancel();
-    await new Promise((resolve) => setTimeout(resolve, UNAVAILABLE_RETRY_DELAY_MS));
+    await new Promise((resolve) => setTimeout(resolve, retryDelay));
   }
 
   if (!response.ok) {
+    await response.body?.cancel();
     throw new ItineraryGenerationError(`Gemini API returned HTTP ${response.status}.`, "upstream");
   }
 

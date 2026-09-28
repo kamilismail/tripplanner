@@ -17,14 +17,14 @@ export const MAX_TRIP_DAYS = 14;
  * response validation can never drift apart silently.
  */
 
-const pointSchema = z.object({
+export const pointSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
 });
 
-const daySchema = z.object({
+export const daySchema = z.object({
   day_number: z.number().int().min(1),
   points: z.array(pointSchema).min(1),
 });

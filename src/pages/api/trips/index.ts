@@ -1,13 +1,34 @@
 import { z } from "zod";
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
-import { itinerarySchema, hasValidDayCount, MAX_TRIP_DAYS, MIN_TRIP_DAYS } from "@/lib/services/itinerary-schema";
+import {
+  daySchema,
+  hasValidDayCount,
+  MAX_TRIP_DAYS,
+  MIN_TRIP_DAYS,
+  pointSchema,
+} from "@/lib/services/itinerary-schema";
 
 export const prerender = false;
 
-const saveRequestSchema = itinerarySchema.extend({
+// The save body is client-controlled, so unlike the lenient Gemini-side
+// schema it caps text length and point count before anything hits the DB.
+const MAX_POINT_NAME_LENGTH = 200;
+const MAX_POINT_DESCRIPTION_LENGTH = 2000;
+const MAX_POINTS_PER_DAY = 20;
+
+const savePointSchema = pointSchema.extend({
+  name: z.string().min(1).max(MAX_POINT_NAME_LENGTH),
+  description: z.string().max(MAX_POINT_DESCRIPTION_LENGTH).optional(),
+});
+
+const saveRequestSchema = z.object({
   city: z.string().trim().min(1).max(100),
   day_count: z.number().int().min(MIN_TRIP_DAYS).max(MAX_TRIP_DAYS),
+  days: z
+    .array(daySchema.extend({ points: z.array(savePointSchema).min(1).max(MAX_POINTS_PER_DAY) }))
+    .min(1)
+    .max(MAX_TRIP_DAYS),
 });
 
 export const POST: APIRoute = async (context) => {
@@ -87,6 +108,10 @@ export const POST: APIRoute = async (context) => {
     const { data: tripPoints, error: pointsError } = await supabase.from("trip_points").insert(pointsToInsert).select();
 
     if (pointsError) {
+      // Best-effort cleanup so a failed save doesn't leave a trip with no
+      // points (trips can't be deleted from the UI yet); errors are ignored
+      // because the response is save_failed either way.
+      await supabase.from("trips").delete().eq("id", trip.id);
       return new Response(JSON.stringify({ error: "save_failed" }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
