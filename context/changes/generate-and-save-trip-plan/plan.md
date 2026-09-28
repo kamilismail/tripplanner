@@ -393,13 +393,13 @@ Not applicable — no existing trip data to migrate; this is the first slice tha
 
 #### Automated
 
-- [x] 5.1 `npm run build` passes
-- [x] 5.2 `npm run lint` passes
-- [x] 5.3 `npm run smoke` still passes unmodified
+- [x] 5.1 `npm run build` passes — 19a1803
+- [x] 5.2 `npm run lint` passes — 19a1803
+- [x] 5.3 `npm run smoke` still passes unmodified — 19a1803
 
 #### Manual
 
-- [x] 5.4 Full sign-in → generate → review → accept → trip-panel path works in a real browser
-- [x] 5.5 Saved trip survives a page refresh
-- [x] 5.6 Loading feedback is continuously visible for the whole generation round trip
-- [x] 5.7 `GEMINI_API_KEY` set as a Cloudflare Workers Secret in production (and mirrored to preview) per `context/foundation/infrastructure.md`
+- [x] 5.4 Full sign-in → generate → review → accept → trip-panel path works in a real browser — 19a1803
+- [x] 5.5 Saved trip survives a page refresh — 19a1803
+- [x] 5.6 Loading feedback is continuously visible for the whole generation round trip — 19a1803
+- [x] 5.7 `GEMINI_API_KEY` set as a Cloudflare Workers Secret in production (and mirrored to preview) per `context/foundation/infrastructure.md` — 19a1803
