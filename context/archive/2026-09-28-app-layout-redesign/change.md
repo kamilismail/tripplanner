@@ -1,10 +1,10 @@
 ---
 change_id: app-layout-redesign
 title: Full app layout and visual redesign with a light travel theme
-status: impl_reviewed
+status: archived
 created: 2026-09-28
 updated: 2026-09-30
-archived_at: null
+archived_at: 2026-09-30T14:31:58Z
 ---
 
 ## Notes
