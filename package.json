@@ -63,6 +63,9 @@
     ],
     "*.{json,css,md}": [
       "prettier --write"
+    ],
+    "{src/pages/trips.astro,src/layouts/AppLayout.astro,src/components/AppHeader.astro,src/components/trips/*.tsx}": [
+      "node scripts/check-ui-literals.mjs"
     ]
   },
   "overrides": {

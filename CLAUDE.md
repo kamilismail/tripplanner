@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run format` — Prettier (includes prettier-plugin-astro + prettier-plugin-tailwindcss)
 - `npm run smoke` — dependency-free auth-flow smoke test (`scripts/smoke.mjs`) against a running server, `BASE_URL` env (default `http://localhost:4321`). Run after dependency upgrades; CI runs it against the production preview with a local Supabase.
 
-Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.
+Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`, plus the UI literal scan (`lint:ui`) on the `/trips` view files.
 
 No test suite exists yet — `smoke` is a sanity check for the starter itself, not application tests.
 
@@ -56,9 +56,15 @@ Full server-side rendering (`output: "server"` in `astro.config.mjs`). All pages
 GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint + build on every push and PR to master. Requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets for the build step.
 
 ## UI
+
 - Tokeny: src/styles/global.css (:root, .dark, @theme inline). Nowy kolor = nowy token, nigdy literał.
 - Komponenty: src/components/ui. Zanim napiszesz nowy, sprawdź ten katalog; brakujący dodaj z rejestru shadcn.
-
+- Wartości tokenów (`:root` w `global.css`) i ich uzasadnienie: `context/changes/app-layout-redesign/theme-values.md`. Zmiana wartości = aktualizacja tej tabeli (z kontrastem AA).
+- Nowy komponent shadcn: `npx shadcn@latest add <name>`, nigdy `shadcn init` (nadpisałby tokeny i `components.json`).
+- W widokach zakaz literałów: hex/`rgb()`/`hsl()`/`oklch()`, klas palety Tailwind (`text-purple-300`, `bg-white`…) i wartości arbitralnych (`p-[12px]`, `ring-[3px]`). Tylko klasy tokenów (`bg-card`, `text-muted-foreground`, `ring-ring`) i warianty komponentów.
+- Strony dla zalogowanych renderuj w `src/layouts/AppLayout.astro` (nagłówek z nawigacją i wylogowaniem).
+- Bramka wizualna: `/dev/kitchen-sink` (tylko `npm run dev`, w produkcji 404) pokazuje 7 stanów widoku `/trips`. Nowy stan lub komponent widoku = nowa sekcja tam.
+- `npm run lint:ui` (`scripts/check-ui-literals.mjs`) skanuje widoki pod kątem literałów; pre-commit uruchamia go na zmienionych plikach `/trips`, `AppLayout`, `AppHeader` i `src/components/trips/*.tsx`.
 
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
