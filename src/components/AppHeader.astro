@@ -8,7 +8,8 @@ interface Props {
   userEmail?: string;
 }
 
-const email = Astro.props.userEmail ?? Astro.locals.user?.email;
+// The override is honoured only in dev, so a production page can never show someone other than the session user.
+const email = (import.meta.env.DEV ? Astro.props.userEmail : undefined) ?? Astro.locals.user?.email;
 const isTrips = Astro.url.pathname.replace(/\/$/, "") === "/trips";
 ---
 
@@ -16,7 +17,7 @@ const isTrips = Astro.url.pathname.replace(/\/$/, "") === "/trips";
   <div class="mx-auto flex h-14 w-full max-w-3xl items-center justify-between gap-2 px-4">
     <a
       href="/trips"
-      class="text-foreground focus-visible:ring-ring/50 flex shrink-0 items-center gap-2 rounded-md font-semibold outline-none focus-visible:ring-2"
+      class="text-foreground focus-visible:ring-ring/50 flex shrink-0 items-center gap-2 rounded-md font-semibold outline-none focus-visible:ring-3"
     >
       <Compass aria-hidden="true" className="text-primary size-6" />
       <span>TripPlanner</span>

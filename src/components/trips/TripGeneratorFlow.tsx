@@ -58,10 +58,18 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const reviewHeadingRef = useRef<HTMLHeadingElement>(null);
+  const cityInputRef = useRef<HTMLInputElement>(null);
+  // Set by Accept/Discard: the review unmounts, so focus goes back to the form instead of <body>.
+  const returnFocusToForm = useRef(false);
 
   // The form unmounts when the review appears; move focus so keyboard users are not dropped at <body>.
   useEffect(() => {
     if (status === "review") reviewHeadingRef.current?.focus();
+    if (status === "idle" && returnFocusToForm.current) {
+      returnFocusToForm.current = false;
+      // preventScroll: after Accept the list scrolls to the highlighted new trip.
+      cityInputRef.current?.focus({ preventScroll: true });
+    }
   }, [status]);
 
   async function generate(request: GenerateTripRequest) {
@@ -137,6 +145,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
       setSubmitted(null);
       form.reset();
       setSuccessMessage(`Your ${plan.day_count}-day trip to ${plan.city} has been saved.`);
+      returnFocusToForm.current = true;
       setStatus("idle");
       onTripSaved?.(savedTrip);
     } catch {
@@ -150,6 +159,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
     setPlan(null);
     setSaveError(null);
     if (submitted) form.fill(submitted);
+    returnFocusToForm.current = true;
     setStatus("idle");
   }
 
@@ -201,6 +211,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
         onDayCountChange={form.setDayCount}
         onSubmit={handleSubmit}
         onTryAgain={handleTryAgain}
+        cityInputRef={cityInputRef}
       />
     </>
   );

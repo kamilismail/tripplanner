@@ -23,6 +23,8 @@ interface Props {
   onDayCountChange: (value: string) => void;
   onSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void;
   onTryAgain: () => void;
+  /** Lets the flow return focus to the city field after Accept/Discard. */
+  cityInputRef?: React.Ref<HTMLInputElement>;
 }
 
 /** The city/day-count form with its success, loading and error states. Stateless: the flow owns state and fetching. */
@@ -40,11 +42,14 @@ export default function GeneratorForm({
   onDayCountChange,
   onSubmit,
   onTryAgain,
+  cityInputRef,
 }: Props) {
   // Unique per instance, so several forms can render on one page (the kitchen sink).
   const id = useId();
   const cityId = `${id}-city`;
   const dayCountId = `${id}-day-count`;
+  const cityErrorId = `${cityId}-error`;
+  const dayCountErrorId = `${dayCountId}-error`;
 
   return (
     <div className="space-y-4">
@@ -64,6 +69,7 @@ export default function GeneratorForm({
               City
             </label>
             <Input
+              ref={cityInputRef}
               id={cityId}
               name="city"
               value={city}
@@ -73,8 +79,9 @@ export default function GeneratorForm({
               placeholder="e.g. Kraków"
               autoComplete="off"
               aria-invalid={cityError ? true : undefined}
+              aria-describedby={cityError ? cityErrorId : undefined}
             />
-            {cityError && <FieldError message={cityError} />}
+            {cityError && <FieldError id={cityErrorId} message={cityError} />}
           </div>
 
           <div>
@@ -95,8 +102,9 @@ export default function GeneratorForm({
               }}
               placeholder={`${MIN_TRIP_DAYS}–${MAX_TRIP_DAYS}`}
               aria-invalid={dayCountError ? true : undefined}
+              aria-describedby={dayCountError ? dayCountErrorId : undefined}
             />
-            {dayCountError && <FieldError message={dayCountError} />}
+            {dayCountError && <FieldError id={dayCountErrorId} message={dayCountError} />}
           </div>
 
           <Button type="submit" disabled={!canSubmit || isLoading} className="w-full">
@@ -129,9 +137,9 @@ export default function GeneratorForm({
   );
 }
 
-function FieldError({ message }: { message: string }) {
+function FieldError({ id, message }: { id: string; message: string }) {
   return (
-    <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
+    <p id={id} className="text-destructive mt-1 flex items-center gap-1 text-xs">
       <CircleAlert aria-hidden="true" className="size-3" />
       {message}
     </p>

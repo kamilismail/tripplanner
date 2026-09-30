@@ -435,18 +435,18 @@ Keep the existing two lines, and do not create a second rules file.
 
 #### Automated
 
-- [x] 4.1 `npm run lint:ui` exits 0, including on `GeneratorForm.tsx`, `PlanReview.tsx` and `DayPointsList.tsx` (covered by the `trips/*.tsx` glob)
-- [x] 4.2 `npm run lint` passes
-- [x] 4.3 `npm run build` passes
-- [x] 4.4 `npm run preview`, then `GET /dev/kitchen-sink` returns 404
+- [x] 4.1 `npm run lint:ui` exits 0, including on `GeneratorForm.tsx`, `PlanReview.tsx` and `DayPointsList.tsx` (covered by the `trips/*.tsx` glob) — a67a359
+- [x] 4.2 `npm run lint` passes — a67a359
+- [x] 4.3 `npm run build` passes — a67a359
+- [x] 4.4 `npm run preview`, then `GET /dev/kitchen-sink` returns 404 — a67a359
 
 #### Manual
 
-- [x] 4.5 In `npm run dev`, `/dev/kitchen-sink` shows every cell of the 7-state matrix, or it is marked N/A with a reason (form empty: N/A, the form always renders; review empty: N/A, it renders only with a plan)
-- [x] 4.6 Tabbing through the kitchen sink shows the same orange focus ring on every control, including the trip toggle and the header buttons
-- [x] 4.7 Disabled inputs during loading are still readable
-- [x] 4.8 Screenshots at desktop and 375 px width of the kitchen sink and `/trips` are saved to `context/changes/app-layout-redesign/screenshots/`
-- [x] 4.9 The real empty state on `/trips` (a user with no trips) shows the CTA, and the CTA jumps to the generator
+- [x] 4.5 In `npm run dev`, `/dev/kitchen-sink` shows every cell of the 7-state matrix, or it is marked N/A with a reason (form empty: N/A, the form always renders; review empty: N/A, it renders only with a plan) — a67a359
+- [x] 4.6 Tabbing through the kitchen sink shows the same orange focus ring on every control, including the trip toggle and the header buttons — a67a359
+- [x] 4.7 Disabled inputs during loading are still readable — a67a359
+- [x] 4.8 Screenshots at desktop and 375 px width of the kitchen sink and `/trips` are saved to `context/changes/app-layout-redesign/screenshots/` — a67a359
+- [x] 4.9 The real empty state on `/trips` (a user with no trips) shows the CTA, and the CTA jumps to the generator — a67a359
 
 ### Phase 5: Guard
 

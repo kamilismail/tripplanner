@@ -1,14 +1,9 @@
 ---
-// Dev-only visual gate for the /trips view. SSR would otherwise ship it to production, so it 404s outside dev.
+// Dev-only visual gate for the /trips view. src/middleware.ts 404s /dev/* outside dev.
 // Not in PROTECTED_ROUTES: it renders fixtures only and needs no session.
+// The KitchenSink client chunk is still emitted to dist/client/_astro; it holds fixtures only (no secrets, no API calls).
 import AppLayout from "@/layouts/AppLayout.astro";
 import KitchenSink from "@/components/trips/KitchenSink";
-
-// A top-level return crashes this rule in the Astro ESLint parser (no parent node), so it is off for this file.
-/* eslint @typescript-eslint/no-misused-promises: "off" */
-if (!import.meta.env.DEV) {
-  return new Response(null, { status: 404 });
-}
 ---
 
 <AppLayout title="Kitchen sink · TripPlanner" userEmail="traveller@example.com">

@@ -45,7 +45,7 @@ export default function TripList({ trips, isLoading, error, newTripId = null, on
         <span className="sr-only">Loading your trips...</span>
         {/* Same box as a collapsed trip item, so the list does not jump when it arrives. */}
         {[0, 1, 2].map((row) => (
-          <div key={row} aria-hidden="true" className="border-border rounded-xl border p-4">
+          <div key={row} aria-hidden="true" className="border-border bg-card rounded-xl border p-4">
             <Skeleton className="h-7 w-1/3" />
             <Skeleton className="mt-1 h-5 w-2/3" />
           </div>
@@ -75,7 +75,7 @@ export default function TripList({ trips, isLoading, error, newTripId = null, on
           </Button>
         </Card>
       ) : (
-        <ul className={cn("space-y-4", isLoading && "opacity-60")}>
+        <ul className={cn("space-y-4", isLoading && "opacity-50")}>
           {trips.map((trip) => (
             <TripItem key={trip.id} trip={trip} isNew={trip.id === newTripId} />
           ))}
