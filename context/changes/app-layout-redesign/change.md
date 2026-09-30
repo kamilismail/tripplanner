@@ -1,9 +1,9 @@
 ---
 change_id: app-layout-redesign
 title: Full app layout and visual redesign with a light travel theme
-status: new
+status: implementing
 created: 2026-09-28
-updated: 2026-09-28
+updated: 2026-09-30
 archived_at: null
 ---
 
@@ -51,3 +51,22 @@ Decisions agreed with the user on 2026-09-28 (input for `/10x-plan`):
 **Unsaved-plan warning:** if the user is on `/trips/new` with a generated but not yet accepted plan (or a generation in progress) and tries to leave (header buttons, other links, reload or closing the tab), warn them that the plan will be lost and let them stay or leave. The explicit "Discard" button needs no extra confirmation. The plan decides the mechanism: `beforeunload` covers reload and close with the browser's generic dialog; in-app links may need a custom confirm dialog. Note that the header is outside the generator's React island.
 
 **Out of scope:** editing and deleting trips (S-02/S-03), a trip detail page, a dark mode toggle.
+
+## UI contract scope (/10x-ui, 2026-09-30)
+
+User narrowed this change to **one view** on 2026-09-30, following the `/10x-ui` rule of one view plus global tokens per change.
+
+- **View:** `/trips`, meaning `src/pages/trips.astro` → `TripsPanel`, `TripGeneratorFlow` and `TripList`, plus the signed-in app header (`AppLayout`) that wraps it.
+- **Token source:** `src/styles/global.css` (`:root` / `.dark` values published through `@theme inline`). Replace the palette with the beach/travel theme (sand neutrals, orange primary) and add the web font. Record the raw values and their source in `context/changes/app-layout-redesign/theme-values.md`.
+- **Contract variant:** a fresh starter with a dead token file. Views use 0 token classes today. Phase 1 wires the view to the existing tokens; new values come after that.
+- **Components:** `src/components/ui` (shadcn, new-york). Add missing primitives with `npx shadcn@latest add <name>` (at least `card`). Never run a second `shadcn init`.
+- **Visual gate:** a kitchen-sink page for `/trips` showing all 7 states, with desktop and mobile screenshots. The repo has no Playwright.
+
+### Deferred to separate changes (decisions above remain valid input)
+
+- Splitting `/trips` (list) from `/trips/new` (generator), plus the post-accept highlight. Reason: routing/flow change, not visual.
+- The unsaved-plan warning. Reason: it depends on the `/trips/new` split.
+- `/` routing (sign-in or redirect), removing `Welcome.astro` and `/dashboard`. Reason: a separate entry-point change.
+- Auth screens (`AuthLayout`, sign-in/sign-up/confirm-email restyle) and sign-up auto sign-in. Reason: a separate view.
+- `Banner.astro` restyle and English copy. Reason: shared with other views; take it with the auth-screens change unless the audit shows it on `/trips`.
+- The other pages keep `bg-cosmic` until their own change. Removing the `bg-cosmic` utility is deferred until no page uses it.
