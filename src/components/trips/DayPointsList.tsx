@@ -1,18 +1,9 @@
 import { MapPin } from "lucide-react";
-
-interface DayPoint {
-  name: string;
-  description?: string | null;
-}
-
-interface Day {
-  day_number: number;
-  points: DayPoint[];
-}
+import type { DayWithPoints } from "@/types";
 
 interface Props {
   /** Days in display order; points in each day are rendered in the given order. */
-  days: Day[];
+  days: DayWithPoints[];
   /** Heading level for the "Day N" label, so it nests under the surrounding heading. */
   headingLevel: "h3" | "h4";
   /** Extra classes for each day item (the plan review renders each day as a bordered card). */

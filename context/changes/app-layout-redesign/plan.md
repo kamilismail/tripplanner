@@ -419,17 +419,17 @@ Keep the existing two lines, and do not create a second rules file.
 
 #### Automated
 
-- [x] 3.1 `npm run lint:ui` exits 0 (0 hits on the default file set)
-- [x] 3.2 `npm run lint` passes
-- [x] 3.3 `npm run build` passes
-- [x] 3.4 `grep -n "inputClass\|primaryButtonClass\|secondaryButtonClass\|cardClass\|bg-cosmic" src/components/trips src/pages/trips.astro` returns nothing
+- [x] 3.1 `npm run lint:ui` exits 0 (0 hits on the default file set) — 09cd644
+- [x] 3.2 `npm run lint` passes — 09cd644
+- [x] 3.3 `npm run build` passes — 09cd644
+- [x] 3.4 `grep -n "inputClass\|primaryButtonClass\|secondaryButtonClass\|cardClass\|bg-cosmic" src/components/trips src/pages/trips.astro` returns nothing — 09cd644
 
 #### Manual
 
-- [x] 3.5 Signed in: `/trips` shows the header, light theme and cards. "Sign out" signs out, and "New trip" scrolls to the generator with its heading visible below the sticky header
-- [x] 3.6 Logged out, opening `/trips` directly redirects to `/auth/signin`
-- [x] 3.7 Generate → review → Accept still works end to end, and the saved trip appears highlighted in the list
-- [x] 3.8 Screenshots at desktop and 375 px: the header fits on one row on mobile without the email
+- [x] 3.5 Signed in: `/trips` shows the header, light theme and cards. "Sign out" signs out, and "New trip" scrolls to the generator with its heading visible below the sticky header — 09cd644
+- [x] 3.6 Logged out, opening `/trips` directly redirects to `/auth/signin` — 09cd644
+- [x] 3.7 Generate → review → Accept still works end to end, and the saved trip appears highlighted in the list — 09cd644
+- [x] 3.8 Screenshots at desktop and 375 px: the header fits on one row on mobile without the email — 09cd644
 
 ### Phase 4: States and the visual gate
 

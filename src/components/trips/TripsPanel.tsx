@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import TripGeneratorFlow from "@/components/trips/TripGeneratorFlow";
 import TripList from "@/components/trips/TripList";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useTrips } from "@/components/hooks/useTrips";
 import type { TripWithPoints } from "@/types";
 
@@ -41,11 +41,13 @@ export default function TripsPanel({ children }: Props) {
       <section aria-labelledby="saved-trips-heading">
         <Card>
           <CardHeader>
-            <CardTitle>
-              <h2 id="saved-trips-heading" className="text-foreground text-xl font-semibold">
-                Your trips
-              </h2>
-            </CardTitle>
+            <h2
+              id="saved-trips-heading"
+              data-slot="card-title"
+              className="text-foreground text-xl leading-none font-semibold"
+            >
+              Your trips
+            </h2>
           </CardHeader>
           <CardContent>
             <TripList trips={trips} isLoading={isLoading} error={error} newTripId={newTripId} onRetry={refresh} />

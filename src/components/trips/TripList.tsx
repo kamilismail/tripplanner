@@ -6,7 +6,7 @@ import { Spinner } from "@/components/ui/spinner";
 import DayPointsList from "@/components/trips/DayPointsList";
 import type { UseTripsResult } from "@/components/hooks/useTrips";
 import { cn } from "@/lib/utils";
-import type { TripPoint, TripWithPoints } from "@/types";
+import type { DayWithPoints, TripPoint, TripWithPoints } from "@/types";
 
 type Props = Pick<UseTripsResult, "trips" | "isLoading" | "error"> & {
   /** Id of the trip saved in this visit; it starts expanded, is scrolled into view and briefly highlighted. */
@@ -15,18 +15,13 @@ type Props = Pick<UseTripsResult, "trips" | "isLoading" | "error"> & {
   onRetry: () => void;
 };
 
-interface TripDay {
-  day_number: number;
-  points: TripPoint[];
-}
-
 const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
 const HIGHLIGHT_MS = 2500;
 
 /** The API returns points unordered; group them by day and order within each day. */
-function groupPointsByDay(points: TripPoint[]): TripDay[] {
+function groupPointsByDay(points: TripPoint[]): DayWithPoints<TripPoint>[] {
   const sorted = [...points].sort((a, b) => a.day_number - b.day_number || a.order_index - b.order_index);
-  const days: TripDay[] = [];
+  const days: DayWithPoints<TripPoint>[] = [];
   for (const point of sorted) {
     const last = days.at(-1);
     if (last?.day_number === point.day_number) last.points.push(point);
@@ -112,7 +107,7 @@ function TripItem({ trip, isNew }: { trip: TripWithPoints; isNew: boolean }) {
         ref={articleRef}
         aria-label={trip.city}
         className={cn(
-          "border-border bg-card rounded-xl border motion-safe:transition-[border-color,box-shadow] motion-safe:duration-700",
+          "border-border bg-card scroll-mt-20 rounded-xl border motion-safe:transition-[border-color,box-shadow] motion-safe:duration-700",
           highlighted && "ring-primary ring-2",
         )}
       >
