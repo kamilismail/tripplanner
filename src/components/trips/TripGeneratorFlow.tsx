@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Check, CircleAlert, CircleCheck, RotateCcw, Sparkles, X } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
-import DayPointsList from "@/components/trips/DayPointsList";
+import GeneratorForm from "@/components/trips/GeneratorForm";
+import PlanReview from "@/components/trips/PlanReview";
 import { useTripGenerationForm } from "@/components/hooks/useTripGenerationForm";
 import { MAX_TRIP_DAYS, MIN_TRIP_DAYS } from "@/lib/services/itinerary-schema";
 import type { ApiErrorResponse, GeneratedTripPlan, GenerateTripRequest, TripWithPoints } from "@/types";
@@ -173,39 +169,17 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
   );
 
   if (status === "review" && plan) {
-    const days = [...plan.days].sort((a, b) => a.day_number - b.day_number);
-
     return (
       <>
         {liveRegion}
-        <section className="space-y-6" aria-labelledby="trip-review-heading">
-          <div>
-            <h2
-              id="trip-review-heading"
-              ref={reviewHeadingRef}
-              tabIndex={-1}
-              className="text-foreground text-xl font-semibold outline-none"
-            >
-              {plan.day_count}-day plan for {plan.city}
-            </h2>
-            <p className="text-muted-foreground mt-1 text-sm">Review the plan, then accept it to save or discard it.</p>
-          </div>
-
-          <DayPointsList days={days} headingLevel="h3" dayClassName="border-border bg-card rounded-xl border p-4" />
-
-          {saveError && <ErrorAlert message={saveError} />}
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-            <Button type="button" variant="outline" onClick={handleDiscard} disabled={isSaving}>
-              <X className="size-4" />
-              Discard
-            </Button>
-            <Button type="button" onClick={() => void handleAccept()} disabled={isSaving}>
-              {isSaving ? <Spinner /> : <Check className="size-4" />}
-              {isSaving ? "Saving..." : "Accept"}
-            </Button>
-          </div>
-        </section>
+        <PlanReview
+          plan={plan}
+          isSaving={isSaving}
+          saveError={saveError}
+          headingRef={reviewHeadingRef}
+          onAccept={() => void handleAccept()}
+          onDiscard={handleDiscard}
+        />
       </>
     );
   }
@@ -213,99 +187,21 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
   return (
     <>
       {liveRegion}
-      <div className="space-y-4">
-        {successMessage && (
-          // No alert role: the live region above already announces the message once.
-          <Alert variant="success" role={undefined}>
-            <CircleCheck aria-hidden="true" />
-            <AlertDescription>{successMessage}</AlertDescription>
-          </Alert>
-        )}
-
-        <form className="space-y-4" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
-          <fieldset disabled={isLoading} className="space-y-4 disabled:opacity-60">
-            <div>
-              <label htmlFor="trip-city" className="text-foreground mb-1 block text-sm font-medium">
-                City
-              </label>
-              <Input
-                id="trip-city"
-                name="city"
-                value={form.city}
-                onChange={(e) => {
-                  form.setCity(e.target.value);
-                }}
-                placeholder="e.g. Kraków"
-                autoComplete="off"
-                aria-invalid={form.cityError ? true : undefined}
-              />
-              {form.cityError && <FieldError message={form.cityError} />}
-            </div>
-
-            <div>
-              <label htmlFor="trip-day-count" className="text-foreground mb-1 block text-sm font-medium">
-                Number of days
-              </label>
-              <Input
-                id="trip-day-count"
-                name="day_count"
-                type="number"
-                inputMode="numeric"
-                min={MIN_TRIP_DAYS}
-                max={MAX_TRIP_DAYS}
-                step={1}
-                value={form.dayCount}
-                onChange={(e) => {
-                  form.setDayCount(e.target.value);
-                }}
-                placeholder={`${MIN_TRIP_DAYS}–${MAX_TRIP_DAYS}`}
-                aria-invalid={form.dayCountError ? true : undefined}
-              />
-              {form.dayCountError && <FieldError message={form.dayCountError} />}
-            </div>
-
-            <Button type="submit" disabled={!form.canSubmit || isLoading} className="w-full">
-              {isLoading ? <Spinner /> : <Sparkles className="size-4" />}
-              {isLoading ? "Generating..." : "Generate plan"}
-            </Button>
-          </fieldset>
-        </form>
-
-        {isLoading && submitted && (
-          <p className="text-muted-foreground flex items-center gap-2 text-sm">
-            <Spinner className="text-primary" />
-            Generating a {submitted.day_count}-day plan for {submitted.city}. This can take a little while...
-          </p>
-        )}
-
-        {status === "error" && error && (
-          <div className="space-y-3">
-            <ErrorAlert message={error} />
-            <Button type="button" variant="outline" onClick={handleTryAgain} disabled={!submitted}>
-              <RotateCcw className="size-4" />
-              Try again
-            </Button>
-          </div>
-        )}
-      </div>
+      <GeneratorForm
+        city={form.city}
+        dayCount={form.dayCount}
+        cityError={form.cityError}
+        dayCountError={form.dayCountError}
+        canSubmit={form.canSubmit}
+        isLoading={isLoading}
+        submitted={submitted}
+        error={status === "error" ? error : null}
+        successMessage={successMessage}
+        onCityChange={form.setCity}
+        onDayCountChange={form.setDayCount}
+        onSubmit={handleSubmit}
+        onTryAgain={handleTryAgain}
+      />
     </>
-  );
-}
-
-function FieldError({ message }: { message: string }) {
-  return (
-    <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
-      <CircleAlert aria-hidden="true" className="size-3" />
-      {message}
-    </p>
-  );
-}
-
-function ErrorAlert({ message }: { message: string }) {
-  return (
-    <Alert variant="destructive">
-      <CircleAlert aria-hidden="true" />
-      <AlertDescription>{message}</AlertDescription>
-    </Alert>
   );
 }

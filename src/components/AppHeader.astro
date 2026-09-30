@@ -3,7 +3,12 @@ import { Compass, LogOut, Map as MapIcon, Plus } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const { user } = Astro.locals;
+interface Props {
+  /** Overrides `Astro.locals.user.email`; only for fixture pages such as the dev kitchen sink. */
+  userEmail?: string;
+}
+
+const email = Astro.props.userEmail ?? Astro.locals.user?.email;
 const isTrips = Astro.url.pathname.replace(/\/$/, "") === "/trips";
 ---
 
@@ -34,9 +39,7 @@ const isTrips = Astro.url.pathname.replace(/\/$/, "") === "/trips";
         <span class="sm:hidden">New</span>
         <span class="hidden sm:inline">New trip</span>
       </a>
-      {user?.email && (
-        <span class="text-muted-foreground hidden max-w-48 truncate text-sm sm:inline">{user.email}</span>
-      )}
+      {email && <span class="text-muted-foreground hidden max-w-48 truncate text-sm sm:inline">{email}</span>}
       <form method="POST" action="/api/auth/signout">
         <button type="submit" class:list={[buttonVariants({ variant: "outline", size: "sm" })]}>
           <LogOut aria-hidden="true" />
