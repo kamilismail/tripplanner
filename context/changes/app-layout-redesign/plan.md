@@ -407,29 +407,29 @@ Keep the existing two lines, and do not create a second rules file.
 
 #### Automated
 
-- [x] 2.1 `npm run build` passes
-- [x] 2.2 `theme-values.md` exists and lists every edited token
-- [x] 2.3 Every text pair in `theme-values.md` is ≥ 4.5:1 (AA), and `--ring` against `--background` is ≥ 3:1
+- [x] 2.1 `npm run build` passes — 0058398
+- [x] 2.2 `theme-values.md` exists and lists every edited token — 0058398
+- [x] 2.3 Every text pair in `theme-values.md` is ≥ 4.5:1 (AA), and `--ring` against `--background` is ≥ 3:1 — 0058398
 
 #### Manual
 
-- [x] 2.4 Apart from orange focus rings, the auth pages, `/` and `/dashboard` look unchanged (they still use literals and `bg-cosmic`)
+- [x] 2.4 Apart from orange focus rings, the auth pages, `/` and `/dashboard` look unchanged (they still use literals and `bg-cosmic`) — 0058398
 
 ### Phase 3: The `/trips` view on tokens and components
 
 #### Automated
 
-- [ ] 3.1 `npm run lint:ui` exits 0 (0 hits on the default file set)
-- [ ] 3.2 `npm run lint` passes
-- [ ] 3.3 `npm run build` passes
-- [ ] 3.4 `grep -n "inputClass\|primaryButtonClass\|secondaryButtonClass\|cardClass\|bg-cosmic" src/components/trips src/pages/trips.astro` returns nothing
+- [x] 3.1 `npm run lint:ui` exits 0 (0 hits on the default file set)
+- [x] 3.2 `npm run lint` passes
+- [x] 3.3 `npm run build` passes
+- [x] 3.4 `grep -n "inputClass\|primaryButtonClass\|secondaryButtonClass\|cardClass\|bg-cosmic" src/components/trips src/pages/trips.astro` returns nothing
 
 #### Manual
 
-- [ ] 3.5 Signed in: `/trips` shows the header, light theme and cards. "Sign out" signs out, and "New trip" scrolls to the generator with its heading visible below the sticky header
-- [ ] 3.6 Logged out, opening `/trips` directly redirects to `/auth/signin`
-- [ ] 3.7 Generate → review → Accept still works end to end, and the saved trip appears highlighted in the list
-- [ ] 3.8 Screenshots at desktop and 375 px: the header fits on one row on mobile without the email
+- [x] 3.5 Signed in: `/trips` shows the header, light theme and cards. "Sign out" signs out, and "New trip" scrolls to the generator with its heading visible below the sticky header
+- [x] 3.6 Logged out, opening `/trips` directly redirects to `/auth/signin`
+- [x] 3.7 Generate → review → Accept still works end to end, and the saved trip appears highlighted in the list
+- [x] 3.8 Screenshots at desktop and 375 px: the header fits on one row on mobile without the email
 
 ### Phase 4: States and the visual gate
 

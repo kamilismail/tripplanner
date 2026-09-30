@@ -1,0 +1,45 @@
+---
+import { Compass, LogOut, Map as MapIcon, Plus } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+
+const { user } = Astro.locals;
+const isTrips = Astro.url.pathname === "/trips";
+---
+
+<header class="border-border bg-background/95 sticky top-0 z-10 border-b backdrop-blur">
+  <div class="mx-auto flex h-14 w-full max-w-3xl items-center justify-between gap-2 px-4">
+    <a
+      href="/trips"
+      class="text-foreground focus-visible:ring-ring/50 flex shrink-0 items-center gap-2 rounded-md font-semibold outline-none focus-visible:ring-2"
+    >
+      <Compass aria-hidden="true" className="text-primary size-6" />
+      <span>TripPlanner</span>
+    </a>
+
+    <nav aria-label="Main" class="flex min-w-0 items-center gap-1 sm:gap-2">
+      <a
+        href="/trips"
+        aria-current={isTrips ? "page" : undefined}
+        class:list={[buttonVariants({ variant: "ghost", size: "sm" }), isTrips && "bg-accent text-accent-foreground"]}
+      >
+        <MapIcon aria-hidden="true" />
+        <span class="sm:hidden">Trips</span>
+        <span class="hidden sm:inline">My trips</span>
+      </a>
+      <a href="/trips#new-trip" class:list={[buttonVariants({ size: "sm" })]}>
+        <Plus aria-hidden="true" />
+        <span class="sm:hidden">New</span>
+        <span class="hidden sm:inline">New trip</span>
+      </a>
+      {user?.email && (
+        <span class="text-muted-foreground hidden max-w-48 truncate text-sm sm:inline">{user.email}</span>
+      )}
+      <form method="POST" action="/api/auth/signout">
+        <button type="submit" class:list={[buttonVariants({ variant: "outline", size: "sm" })]}>
+          <LogOut aria-hidden="true" />
+          <span class="sr-only sm:not-sr-only">Sign out</span>
+        </button>
+      </form>
+    </nav>
+  </div>
+</header>

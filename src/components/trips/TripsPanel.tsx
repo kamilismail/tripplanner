@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import TripGeneratorFlow from "@/components/trips/TripGeneratorFlow";
 import TripList from "@/components/trips/TripList";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTrips } from "@/components/hooks/useTrips";
 import type { TripWithPoints } from "@/types";
 
@@ -8,8 +9,6 @@ interface Props {
   /** Server-rendered header for the generator card (passed from Astro as slot content). */
   children?: React.ReactNode;
 }
-
-const cardClass = "rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl";
 
 /** Lifts the trip list state so an accepted plan shows up in the list without a page reload. */
 export default function TripsPanel({ children }: Props) {
@@ -31,16 +30,27 @@ export default function TripsPanel({ children }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className={cardClass}>
-        {children}
-        <TripGeneratorFlow onTripSaved={handleTripSaved} />
-      </div>
+      {/* "New trip" in the header jumps here; the scroll margin clears the sticky header (h-14). */}
+      <Card id="new-trip" className="scroll-mt-20">
+        <CardHeader>{children}</CardHeader>
+        <CardContent>
+          <TripGeneratorFlow onTripSaved={handleTripSaved} />
+        </CardContent>
+      </Card>
 
-      <section className={cardClass} aria-labelledby="saved-trips-heading">
-        <h2 id="saved-trips-heading" className="mb-6 text-2xl font-semibold text-white">
-          Your trips
-        </h2>
-        <TripList trips={trips} isLoading={isLoading} error={error} newTripId={newTripId} onRetry={refresh} />
+      <section aria-labelledby="saved-trips-heading">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h2 id="saved-trips-heading" className="text-foreground text-xl font-semibold">
+                Your trips
+              </h2>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TripList trips={trips} isLoading={isLoading} error={error} newTripId={newTripId} onRetry={refresh} />
+          </CardContent>
+        </Card>
       </section>
     </div>
   );

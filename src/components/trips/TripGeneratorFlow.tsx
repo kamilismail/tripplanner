@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Check, CircleAlert, CircleCheck, MapPin, RotateCcw, Sparkles, X } from "lucide-react";
+import { Check, CircleAlert, CircleCheck, RotateCcw, Sparkles, X } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { ServerError } from "@/components/auth/ServerError";
+import DayPointsList from "@/components/trips/DayPointsList";
 import { useTripGenerationForm } from "@/components/hooks/useTripGenerationForm";
 import { MAX_TRIP_DAYS, MIN_TRIP_DAYS } from "@/lib/services/itinerary-schema";
-import { cn } from "@/lib/utils";
 import type { ApiErrorResponse, GeneratedTripPlan, GenerateTripRequest, TripWithPoints } from "@/types";
 
 type Status = "idle" | "loading" | "review" | "error";
@@ -15,11 +15,6 @@ interface Props {
   /** Called after a plan has been accepted and saved, with the persisted trip (`null` if the response was unreadable). */
   onTripSaved?: (trip: TripWithPoints | null) => void;
 }
-
-const inputClass =
-  "h-10 rounded-lg border-white/20 bg-white/10 text-white placeholder:text-white/40 focus-visible:border-white/20 focus-visible:ring-2 focus-visible:ring-purple-400 aria-invalid:border-red-400/60";
-const primaryButtonClass = "rounded-lg bg-purple-600 px-4 py-2 font-medium text-white hover:bg-purple-500";
-const secondaryButtonClass = "rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20";
 
 async function readErrorCode(response: Response): Promise<string | undefined> {
   try {
@@ -189,47 +184,23 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
               id="trip-review-heading"
               ref={reviewHeadingRef}
               tabIndex={-1}
-              className="text-xl font-semibold text-white outline-none"
+              className="text-foreground text-xl font-semibold outline-none"
             >
               {plan.day_count}-day plan for {plan.city}
             </h2>
-            <p className="mt-1 text-sm text-blue-100/60">Review the plan, then accept it to save or discard it.</p>
+            <p className="text-muted-foreground mt-1 text-sm">Review the plan, then accept it to save or discard it.</p>
           </div>
 
-          <ol className="space-y-4">
-            {days.map((day) => (
-              <li key={day.day_number} className="rounded-xl border border-white/10 bg-white/5 p-4">
-                <h3 className="mb-3 text-sm font-semibold tracking-wide text-purple-200 uppercase">
-                  Day {day.day_number}
-                </h3>
-                <ul className="space-y-3">
-                  {day.points.map((point, index) => (
-                    <li key={`${day.day_number}-${index}`} className="flex gap-3">
-                      <MapPin className="mt-0.5 size-4 shrink-0 text-purple-300" />
-                      <div>
-                        <p className="font-medium text-white">{point.name}</p>
-                        {point.description && <p className="text-sm text-blue-100/70">{point.description}</p>}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ol>
+          <DayPointsList days={days} headingLevel="h3" dayClassName="border-border bg-card rounded-xl border p-4" />
 
-          <ServerError message={saveError} />
+          {saveError && <ErrorAlert message={saveError} />}
 
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-            <Button type="button" onClick={handleDiscard} disabled={isSaving} className={secondaryButtonClass}>
+            <Button type="button" variant="outline" onClick={handleDiscard} disabled={isSaving}>
               <X className="size-4" />
               Discard
             </Button>
-            <Button
-              type="button"
-              onClick={() => void handleAccept()}
-              disabled={isSaving}
-              className={primaryButtonClass}
-            >
+            <Button type="button" onClick={() => void handleAccept()} disabled={isSaving}>
               {isSaving ? <Spinner /> : <Check className="size-4" />}
               {isSaving ? "Saving..." : "Accept"}
             </Button>
@@ -244,16 +215,17 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
       {liveRegion}
       <div className="space-y-4">
         {successMessage && (
-          <p className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-900/30 px-3 py-2 text-sm text-green-200">
-            <CircleCheck className="size-4 shrink-0" />
-            {successMessage}
-          </p>
+          // No alert role: the live region above already announces the message once.
+          <Alert variant="success" role={undefined}>
+            <CircleCheck aria-hidden="true" />
+            <AlertDescription>{successMessage}</AlertDescription>
+          </Alert>
         )}
 
         <form className="space-y-4" onSubmit={handleSubmit} noValidate aria-busy={isLoading}>
           <fieldset disabled={isLoading} className="space-y-4 disabled:opacity-60">
             <div>
-              <label htmlFor="trip-city" className="mb-1 block text-sm text-blue-100/80">
+              <label htmlFor="trip-city" className="text-foreground mb-1 block text-sm font-medium">
                 City
               </label>
               <Input
@@ -266,13 +238,12 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
                 placeholder="e.g. Kraków"
                 autoComplete="off"
                 aria-invalid={form.cityError ? true : undefined}
-                className={cn(inputClass, form.cityError && "border-red-400/60 focus-visible:ring-red-400")}
               />
               {form.cityError && <FieldError message={form.cityError} />}
             </div>
 
             <div>
-              <label htmlFor="trip-day-count" className="mb-1 block text-sm text-blue-100/80">
+              <label htmlFor="trip-day-count" className="text-foreground mb-1 block text-sm font-medium">
                 Number of days
               </label>
               <Input
@@ -289,12 +260,11 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
                 }}
                 placeholder={`${MIN_TRIP_DAYS}–${MAX_TRIP_DAYS}`}
                 aria-invalid={form.dayCountError ? true : undefined}
-                className={cn(inputClass, form.dayCountError && "border-red-400/60 focus-visible:ring-red-400")}
               />
               {form.dayCountError && <FieldError message={form.dayCountError} />}
             </div>
 
-            <Button type="submit" disabled={!form.canSubmit || isLoading} className={cn("w-full", primaryButtonClass)}>
+            <Button type="submit" disabled={!form.canSubmit || isLoading} className="w-full">
               {isLoading ? <Spinner /> : <Sparkles className="size-4" />}
               {isLoading ? "Generating..." : "Generate plan"}
             </Button>
@@ -302,16 +272,16 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
         </form>
 
         {isLoading && submitted && (
-          <p className="flex items-center gap-2 text-sm text-blue-100/70">
-            <Spinner className="text-purple-300" />
+          <p className="text-muted-foreground flex items-center gap-2 text-sm">
+            <Spinner className="text-primary" />
             Generating a {submitted.day_count}-day plan for {submitted.city}. This can take a little while...
           </p>
         )}
 
         {status === "error" && error && (
           <div className="space-y-3">
-            <ServerError message={error} />
-            <Button type="button" onClick={handleTryAgain} disabled={!submitted} className={secondaryButtonClass}>
+            <ErrorAlert message={error} />
+            <Button type="button" variant="outline" onClick={handleTryAgain} disabled={!submitted}>
               <RotateCcw className="size-4" />
               Try again
             </Button>
@@ -324,9 +294,18 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
 
 function FieldError({ message }: { message: string }) {
   return (
-    <p className="mt-1 flex items-center gap-1 text-xs text-red-300">
-      <CircleAlert className="size-3" />
+    <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
+      <CircleAlert aria-hidden="true" className="size-3" />
       {message}
     </p>
+  );
+}
+
+function ErrorAlert({ message }: { message: string }) {
+  return (
+    <Alert variant="destructive">
+      <CircleAlert aria-hidden="true" />
+      <AlertDescription>{message}</AlertDescription>
+    </Alert>
   );
 }

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, ChevronDown, MapPin, RotateCcw } from "lucide-react";
+import { CalendarDays, ChevronDown, CircleAlert, RotateCcw } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { ServerError } from "@/components/auth/ServerError";
+import DayPointsList from "@/components/trips/DayPointsList";
 import type { UseTripsResult } from "@/components/hooks/useTrips";
 import { cn } from "@/lib/utils";
 import type { TripPoint, TripWithPoints } from "@/types";
@@ -43,8 +44,8 @@ export default function TripList({ trips, isLoading, error, newTripId = null, on
   if (trips === null) {
     if (error && !isLoading) return <ListError message={error} isLoading={isLoading} onRetry={onRetry} />;
     return (
-      <p role="status" className="flex items-center gap-2 text-sm text-blue-100/70">
-        <Spinner className="text-purple-300" />
+      <p role="status" className="text-muted-foreground flex items-center gap-2 text-sm">
+        <Spinner className="text-primary" />
         Loading your trips...
       </p>
     );
@@ -56,7 +57,7 @@ export default function TripList({ trips, isLoading, error, newTripId = null, on
       {error && <ListError message={error} isLoading={isLoading} onRetry={onRetry} />}
 
       {trips.length === 0 ? (
-        <p className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-blue-100/70">
+        <p className="border-border bg-muted text-muted-foreground rounded-xl border p-4 text-sm">
           No trips yet. Generate a plan above and accept it to save your first trip.
         </p>
       ) : (
@@ -73,13 +74,11 @@ export default function TripList({ trips, isLoading, error, newTripId = null, on
 function ListError({ message, isLoading, onRetry }: { message: string; isLoading: boolean; onRetry: () => void }) {
   return (
     <div className="space-y-3">
-      <ServerError message={message} />
-      <Button
-        type="button"
-        onClick={onRetry}
-        disabled={isLoading}
-        className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20"
-      >
+      <Alert variant="destructive">
+        <CircleAlert aria-hidden="true" />
+        <AlertDescription>{message}</AlertDescription>
+      </Alert>
+      <Button type="button" variant="outline" onClick={onRetry} disabled={isLoading}>
         {isLoading ? <Spinner /> : <RotateCcw className="size-4" />}
         {isLoading ? "Retrying..." : "Try again"}
       </Button>
@@ -113,8 +112,8 @@ function TripItem({ trip, isNew }: { trip: TripWithPoints; isNew: boolean }) {
         ref={articleRef}
         aria-label={trip.city}
         className={cn(
-          "rounded-xl border border-white/10 bg-white/5 motion-safe:transition-[border-color,box-shadow] motion-safe:duration-700",
-          highlighted && "border-purple-400/70 shadow-[0_0_0_3px_rgb(192_132_252/0.35)]",
+          "border-border bg-card rounded-xl border motion-safe:transition-[border-color,box-shadow] motion-safe:duration-700",
+          highlighted && "ring-primary ring-2",
         )}
       >
         <h3>
@@ -125,11 +124,11 @@ function TripItem({ trip, isNew }: { trip: TripWithPoints; isNew: boolean }) {
             onClick={() => {
               setExpanded((value) => !value);
             }}
-            className="flex w-full items-start justify-between gap-4 rounded-xl p-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
+            className="focus-visible:ring-ring flex w-full items-start justify-between gap-4 rounded-xl p-4 text-left outline-none focus-visible:ring-2"
           >
             <span>
-              <span className="block text-lg font-semibold text-white">{trip.city}</span>
-              <span className="mt-1 flex items-center gap-2 text-sm font-normal text-blue-100/60">
+              <span className="text-foreground block text-lg font-semibold">{trip.city}</span>
+              <span className="text-muted-foreground mt-1 flex items-center gap-2 text-sm font-normal">
                 <CalendarDays className="size-4 shrink-0" />
                 <span>
                   {plural(trip.day_count, "day", "days")} · {plural(trip.trip_points.length, "place", "places")} · saved{" "}
@@ -140,33 +139,16 @@ function TripItem({ trip, isNew }: { trip: TripWithPoints; isNew: boolean }) {
             <ChevronDown
               aria-hidden="true"
               className={cn(
-                "mt-1 size-5 shrink-0 text-blue-100/60 motion-safe:transition-transform",
+                "text-muted-foreground mt-1 size-5 shrink-0 motion-safe:transition-transform",
                 expanded && "rotate-180",
               )}
             />
           </button>
         </h3>
 
-        <ol id={panelId} hidden={!expanded} className="space-y-4 px-4 pb-4">
-          {days.map((day) => (
-            <li key={day.day_number}>
-              <h4 className="mb-2 text-sm font-semibold tracking-wide text-purple-200 uppercase">
-                Day {day.day_number}
-              </h4>
-              <ul className="space-y-3">
-                {day.points.map((point) => (
-                  <li key={point.id} className="flex gap-3">
-                    <MapPin className="mt-0.5 size-4 shrink-0 text-purple-300" />
-                    <div>
-                      <p className="font-medium text-white">{point.name}</p>
-                      {point.description && <p className="text-sm text-blue-100/70">{point.description}</p>}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ol>
+        <div id={panelId} hidden={!expanded} className="px-4 pb-4">
+          <DayPointsList days={days} headingLevel="h4" />
+        </div>
       </article>
     </li>
   );
