@@ -127,7 +127,8 @@ function TripItem({ trip, isNew }: { trip: TripWithPoints; isNew: boolean }) {
         aria-label={trip.city}
         className={cn(
           "border-border bg-card scroll-mt-20 rounded-xl border motion-safe:transition-[border-color,box-shadow] motion-safe:duration-700",
-          highlighted && "ring-primary ring-2",
+          // `isNew` too: if another trip becomes new, this one's timer is cleared before it ends.
+          highlighted && isNew && "ring-primary ring-2",
         )}
       >
         <h3>

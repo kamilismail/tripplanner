@@ -19,7 +19,7 @@
 | Pattern Consistency | PASS |
 | Success Criteria | WARNING |
 
-Automated criteria were re-run during the review: `lint:ui` 0 hits, `lint` passes, `build` passes. The preview returned 404 for `/dev/kitchen-sink` during implementation. `dist/server/chunks/kitchen-sink_*.mjs` contains only the 404 return, so `import.meta.env.DEV` was replaced with `false` and the template was removed as dead code. `/dev/kitchen-sink` is not in `PROTECTED_ROUTES`.
+Automated criteria were re-run during the review: `lint:ui` 0 hits, `lint` passes, `build` passes. The preview returned 404 for `/dev/kitchen-sink` during implementation. `dist/server/chunks/kitchen-sink_*.mjs` contains only the 404 return, so `import.meta.env.DEV` was replaced with `false` and the template was removed as dead code. `/dev/kitchen-sink` is not in `PROTECTED_ROUTES`. (Correction, full review 2026-09-30, F2: after F1 moved the gate to `src/middleware.ts`, the chunk contains the full page render with fixtures again; the page is unreachable in production only because of the middleware 404.)
 
 ## Findings
 

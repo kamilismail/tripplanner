@@ -31,6 +31,16 @@ async function readSavedTrip(response: Response): Promise<TripWithPoints | null>
   }
 }
 
+/** The 200 body of `POST /api/trips/generate`; `null` if it can't be read or lacks `days`. */
+async function readGeneratedPlan(response: Response): Promise<GeneratedTripPlan | null> {
+  try {
+    const body = (await response.json()) as Partial<GeneratedTripPlan> | null;
+    return body && Array.isArray(body.days) ? (body as GeneratedTripPlan) : null;
+  } catch {
+    return null;
+  }
+}
+
 function generationErrorMessage(status: number, code: string | undefined): string {
   if (status === 401) return "Your session has expired. Please sign in again.";
   if (code === "invalid_input") return `Enter a city and a day count from ${MIN_TRIP_DAYS} to ${MAX_TRIP_DAYS}.`;
@@ -65,6 +75,8 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
   // The form unmounts when the review appears; move focus so keyboard users are not dropped at <body>.
   useEffect(() => {
     if (status === "review") reviewHeadingRef.current?.focus();
+    // The disabled fieldset dropped focus from the submit button while loading.
+    if (status === "error") cityInputRef.current?.focus({ preventScroll: true });
     if (status === "idle" && returnFocusToForm.current) {
       returnFocusToForm.current = false;
       // preventScroll: after Accept the list scrolls to the highlighted new trip.
@@ -93,15 +105,15 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
         return;
       }
 
-      const body = (await response.json()) as Partial<GeneratedTripPlan> | null;
-      // The server validates with zod; this only keeps a malformed body from crashing the review render.
-      if (!body || !Array.isArray(body.days)) {
+      // The server validates with zod; this only keeps a malformed or non-JSON body from crashing the review render.
+      const generated = await readGeneratedPlan(response);
+      if (!generated) {
         setError(generationErrorMessage(response.status, undefined));
         setStatus("error");
         return;
       }
 
-      setPlan(body as GeneratedTripPlan);
+      setPlan(generated);
       setSaveError(null);
       setStatus("review");
     } catch {
