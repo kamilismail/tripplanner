@@ -1,0 +1,45 @@
+---
+change_id: auth-entry-redesign
+title: Entry point and auth screens on the light travel theme
+status: plan_reviewed
+created: 2026-09-30
+updated: 2026-09-30
+archived_at: null
+---
+
+## Notes
+
+Change A of two agreed with the user on 2026-09-30. It picks up the deferred items from
+`context/archive/2026-09-28-app-layout-redesign/change.md` (sections "Routing and pages", "Auth screens",
+"Deferred to separate changes"); those decisions remain the input. Change B (split `/trips` into the list and
+`/trips/new`, post-accept highlight, unsaved-plan warning) is a separate change through the normal chain.
+
+## UI contract scope (/10x-ui, 2026-09-30)
+
+- **View:** the auth screens behind one `AuthLayout` (centered panel): `/auth/signin` (primary, also what `/`
+  shows to signed-out users), `/auth/signup`, `/auth/confirm-email`.
+- **Token source:** `src/styles/global.css` (`:root` / `.dark` values published through `@theme inline`), the
+  beach/travel theme already introduced by app-layout-redesign. Values and rationale:
+  `context/archive/2026-09-28-app-layout-redesign/theme-values.md`. New values only if the audit needs them.
+- **Contract variant:** existing design system (tokens + `src/components/ui`: button, card, input, alert, spinner,
+  skeleton). The auth screens read none of it today (0 token classes, `Button` overridden with palette classes).
+  Extend it; never run `shadcn init`.
+- **Visual gate:** kitchen-sink sections for the auth screens (7 states), desktop + 375 px screenshots.
+
+## In scope
+
+- `/`: signed-out → sign-in screen; signed-in → redirect to `/trips` (switches to `/trips/new` in change B).
+- Remove `Welcome.astro`, `Topbar.astro`, `/dashboard` (page + `PROTECTED_ROUTES` entry) and rewrite the
+  `/dashboard` checks in `scripts/smoke.mjs`.
+- Sign-in lands on `/trips`; sign-out lands on the sign-in screen.
+- Sign-up: if `signUp` returns a session, redirect to `/trips`; otherwise fall back to "check your email".
+  Hosted Supabase needs "Confirm email" disabled for auto sign-in (external state, not code).
+- `Banner.astro` on Tailwind + tokens; English copy for the banner and `config-status`; replace the
+  "10x Astro Starter" title.
+- Remove the `bg-cosmic` utility once no page uses it.
+- Extend `lint:ui` / pre-commit scope to the auth files; fix the stale `theme-values.md` path in `CLAUDE.md`.
+
+## Out of scope
+
+- `/trips` split, `/trips/new`, highlight, unsaved-plan warning (change B).
+- Split-screen auth layout, password reset, OAuth providers, dark mode toggle.
