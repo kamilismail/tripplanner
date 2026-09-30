@@ -394,14 +394,14 @@ Keep the existing two lines, and do not create a second rules file.
 
 #### Automated
 
-- [x] 1.1 `src/components/ui/card.tsx`, `alert.tsx` and `skeleton.tsx` exist
-- [x] 1.2 `npm run lint` passes
-- [x] 1.3 `npm run build` passes
-- [x] 1.4 `npm run lint:ui` runs and reports the current baseline (37 lines on the 4 view files) with exit code 1
+- [x] 1.1 `src/components/ui/card.tsx`, `alert.tsx` and `skeleton.tsx` exist — 24da09d
+- [x] 1.2 `npm run lint` passes — 24da09d
+- [x] 1.3 `npm run build` passes — 24da09d
+- [x] 1.4 `npm run lint:ui` runs and reports the current baseline (37 lines on the 4 view files) with exit code 1 — 24da09d
 
 #### Manual
 
-- [x] 1.5 `/trips` and the auth pages look unchanged apart from the font
+- [x] 1.5 `/trips` and the auth pages look unchanged apart from the font — 24da09d
 
 ### Phase 2: Token values
 
