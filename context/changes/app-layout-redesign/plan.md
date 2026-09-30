@@ -407,13 +407,13 @@ Keep the existing two lines, and do not create a second rules file.
 
 #### Automated
 
-- [ ] 2.1 `npm run build` passes
-- [ ] 2.2 `theme-values.md` exists and lists every edited token
-- [ ] 2.3 Every text pair in `theme-values.md` is ≥ 4.5:1 (AA), and `--ring` against `--background` is ≥ 3:1
+- [x] 2.1 `npm run build` passes
+- [x] 2.2 `theme-values.md` exists and lists every edited token
+- [x] 2.3 Every text pair in `theme-values.md` is ≥ 4.5:1 (AA), and `--ring` against `--background` is ≥ 3:1
 
 #### Manual
 
-- [ ] 2.4 Apart from orange focus rings, the auth pages, `/` and `/dashboard` look unchanged (they still use literals and `bg-cosmic`)
+- [x] 2.4 Apart from orange focus rings, the auth pages, `/` and `/dashboard` look unchanged (they still use literals and `bg-cosmic`)
 
 ### Phase 3: The `/trips` view on tokens and components
 
