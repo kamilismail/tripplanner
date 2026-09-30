@@ -452,9 +452,9 @@ Keep the existing two lines, and do not create a second rules file.
 
 #### Automated
 
-- [x] 5.1 Staging a file in `src/components/trips/` that contains `text-purple-300` makes the pre-commit hook fail; reverting the file lets it pass
-- [x] 5.2 `npm run lint` passes
+- [x] 5.1 Staging a file in `src/components/trips/` that contains `text-purple-300` makes the pre-commit hook fail; reverting the file lets it pass — 47131e5
+- [x] 5.2 `npm run lint` passes — 47131e5
 
 #### Manual
 
-- [x] 5.3 The `CLAUDE.md` `## UI` section names the token source, the components directory, the literal ban, `AppLayout`, the kitchen sink and `lint:ui`, and sits outside the CLI block
+- [x] 5.3 The `CLAUDE.md` `## UI` section names the token source, the components directory, the literal ban, `AppLayout`, the kitchen sink and `lint:ui`, and sits outside the CLI block — 47131e5
