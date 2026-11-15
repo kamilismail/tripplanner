@@ -36,9 +36,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      # Pinned to the CLI the repo uses locally (package-lock: supabase 2.117.0). CLI 3.x rejects
+      # supabase/config.toml ([inbucket] → [local_smtp]); upgrade both together as a deliberate change.
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.117.0
       - run: npm ci
       - name: Start local Supabase
         run: |
