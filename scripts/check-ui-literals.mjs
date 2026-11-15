@@ -23,14 +23,27 @@ const PATTERN = new RegExp(
   "g",
 );
 
-function defaultFiles() {
-  const tripsDir = "src/components/trips";
-  const tripComponents = existsSync(tripsDir)
-    ? readdirSync(tripsDir)
-        .filter((name) => name.endsWith(".tsx"))
-        .map((name) => join(tripsDir, name).replaceAll("\\", "/"))
+function listDir(dir, extensions) {
+  return existsSync(dir)
+    ? readdirSync(dir)
+        .filter((name) => extensions.some((ext) => name.endsWith(ext)))
+        .map((name) => join(dir, name).replaceAll("\\", "/"))
     : [];
-  return ["src/pages/trips.astro", "src/layouts/AppLayout.astro", "src/components/AppHeader.astro", ...tripComponents];
+}
+
+function defaultFiles() {
+  return [
+    "src/pages/trips.astro",
+    "src/layouts/AppLayout.astro",
+    "src/components/AppHeader.astro",
+    ...listDir("src/components/trips", [".tsx"]),
+    "src/pages/index.ts",
+    ...listDir("src/pages/auth", [".astro"]),
+    "src/layouts/AuthLayout.astro",
+    "src/layouts/Layout.astro",
+    "src/components/Banner.astro",
+    ...listDir("src/components/auth", [".tsx", ".astro"]),
+  ];
 }
 
 const args = process.argv.slice(2).map((file) => file.replaceAll("\\", "/"));

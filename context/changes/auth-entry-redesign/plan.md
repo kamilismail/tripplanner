@@ -642,16 +642,16 @@ request.
 
 #### Automated
 
-- [ ] 3.1 UI literal scan with extended defaults passes: `npm run lint:ui`
-- [ ] 3.2 Lint passes: `npm run lint`
-- [ ] 3.3 Type check passes: `npx astro check`
-- [ ] 3.4 Build passes: `npm run build`
-- [ ] 3.5 Smoke passes: `npm run smoke`
-- [ ] 3.6 The screenshot files exist in `context/changes/auth-entry-redesign/screenshots/`
+- [x] 3.1 UI literal scan with extended defaults passes: `npm run lint:ui`
+- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.3 Type check passes: `npx astro check`
+- [x] 3.4 Build passes: `npm run build`
+- [x] 3.5 Smoke passes: `npm run smoke`
+- [x] 3.6 The screenshot files exist in `context/changes/auth-entry-redesign/screenshots/`
 
 #### Manual
 
-- [ ] 3.7 `/dev/kitchen-sink` shows every auth state listed above, at desktop and 375 px, with no layout breakage
-- [ ] 3.8 Submitting a form in the kitchen sink does not navigate or post
-- [ ] 3.9 A deliberate palette class added to an auth file is rejected by the pre-commit hook (then reverted)
-- [ ] 3.10 CLAUDE.md reads correctly for the new layout, paths and scan scope
+- [x] 3.7 `/dev/kitchen-sink` shows every auth state listed above, at desktop and 375 px, with no layout breakage
+- [x] 3.8 Submitting a form in the kitchen sink does not navigate or post
+- [x] 3.9 A deliberate palette class added to an auth file is rejected by the pre-commit hook (then reverted)
+- [x] 3.10 CLAUDE.md reads correctly for the new layout, paths and scan scope

@@ -49,3 +49,11 @@ Change A of two agreed with the user on 2026-09-30. It picks up the deferred ite
 Banner `text-destructive` on `bg-destructive/10` over `background`, computed from the `global.css` oklch tokens:
 light 4.57:1 (sRGB mix) / 4.67:1 (oklab mix, Tailwind 4 `color-mix`); dark 6.19:1. AA passes (≥ 4.5), but with
 little headroom in light. Any darker tint or lighter `--destructive` needs a re-check. No new token.
+
+## Visual gate (Phase 3, 2026-11-15)
+
+Screenshots are in `screenshots/`: `signin-*`, `confirm-email-*`, `kitchen-sink-*` (full page) and `kitchen-sink-auth-*`
+(auth sections only), each at desktop (1280) and 375 px. None has horizontal overflow. They were taken with headless
+Chrome over CDP with device emulation. The `/auth/signin` + missing-config Banner capture is replaced, by user
+decision, by the Banner cell in `kitchen-sink-auth-*`. A second server cannot override `SUPABASE_URL` (Astro allows
+one dev server, and preview reads `.dev.vars`), and manual check 2.11 already confirmed the Banner on the real page.

@@ -1,22 +1,18 @@
 ---
-import { MailCheck } from "lucide-react";
 import AuthLayout from "@/layouts/AuthLayout.astro";
+import ConfirmEmailBody from "@/components/auth/ConfirmEmailBody.astro";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Reached only when sign-up returned no session, i.e. the account still needs email confirmation.
 const content = {
   heading: "Check your email",
-  description: "We've sent a confirmation link to your email address. Click it to activate your account.",
   linkText: "Back to sign in",
 };
 ---
 
 <AuthLayout title={content.heading}>
-  <div class="flex flex-col items-center gap-4 text-center">
-    <MailCheck aria-hidden="true" className="text-primary size-10" />
-    <p class="text-muted-foreground text-sm">{content.description}</p>
-  </div>
+  <ConfirmEmailBody />
   <a slot="footer" href="/auth/signin" class:list={[cn(buttonVariants({ variant: "link" }), "h-auto p-0")]}>
     {content.linkText}
   </a>

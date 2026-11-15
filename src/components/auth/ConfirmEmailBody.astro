@@ -1,0 +1,11 @@
+---
+// Body of the confirm-email card, shared by src/pages/auth/confirm-email.astro and the dev kitchen sink.
+import { MailCheck } from "lucide-react";
+
+const description = "We've sent a confirmation link to your email address. Click it to activate your account.";
+---
+
+<div class="flex flex-col items-center gap-4 text-center">
+  <MailCheck aria-hidden="true" className="text-primary size-10" />
+  <p class="text-muted-foreground text-sm">{description}</p>
+</div>

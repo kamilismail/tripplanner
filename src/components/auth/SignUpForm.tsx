@@ -7,18 +7,38 @@ import { ServerError } from "@/components/auth/ServerError";
 import { usePendingSubmit } from "@/components/hooks/usePendingSubmit";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth";
 
-interface Props {
-  serverError?: string | null;
+interface Fields {
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
 }
 
-export default function SignUpForm({ serverError }: Props) {
+interface Props {
+  serverError?: string | null;
+  // Kitchen-sink fixtures only: they seed the initial state. Production pages pass none of them.
+  initialValues?: Fields;
+  initialErrors?: Fields;
+  initialShowPassword?: boolean;
+  forcePending?: boolean;
+  /** Never posts: submit is always prevented (validation still runs). */
+  demo?: boolean;
+}
+
+export default function SignUpForm({
+  serverError,
+  initialValues,
+  initialErrors,
+  initialShowPassword = false,
+  forcePending = false,
+  demo = false,
+}: Props) {
   const uid = useId();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState(initialValues?.email ?? "");
+  const [password, setPassword] = useState(initialValues?.password ?? "");
+  const [confirmPassword, setConfirmPassword] = useState(initialValues?.confirmPassword ?? "");
+  const [showPassword, setShowPassword] = useState(initialShowPassword);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [errors, setErrors] = useState<Fields>(initialErrors ?? {});
   const [submitting, startSubmitting] = usePendingSubmit();
 
   function validate() {
@@ -51,6 +71,7 @@ export default function SignUpForm({ serverError }: Props) {
   }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    if (demo) e.preventDefault();
     const invalid = validate();
     if (invalid.length > 0) {
       e.preventDefault();
@@ -61,7 +82,7 @@ export default function SignUpForm({ serverError }: Props) {
       }, 0);
       return;
     }
-    startSubmitting();
+    if (!demo) startSubmitting();
   }
 
   const passwordHint =
@@ -141,7 +162,11 @@ export default function SignUpForm({ serverError }: Props) {
 
       <ServerError message={serverError} />
 
-      <SubmitButton pending={submitting} pendingText="Creating account..." icon={<UserPlus className="size-4" />}>
+      <SubmitButton
+        pending={forcePending || submitting}
+        pendingText="Creating account..."
+        icon={<UserPlus className="size-4" />}
+      >
         Create account
       </SubmitButton>
     </form>

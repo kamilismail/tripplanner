@@ -89,7 +89,8 @@ function fixtureTrips(section: string): TripWithPoints[] {
 const LIST_ERROR = "We couldn't load your trips. Please try again.";
 const SESSION_EXPIRED = "Your session has expired. Please sign in again.";
 
-function Cell({ label, children, id }: { label: string; children: React.ReactNode; id?: string }) {
+// Shared with the auth kitchen sink (src/components/auth/AuthKitchenSink.tsx and src/pages/dev/kitchen-sink.astro).
+export function Cell({ label, children, id }: { label: string; children: React.ReactNode; id?: string }) {
   return (
     <Card id={id} className="scroll-mt-20 gap-4">
       <CardHeader>
@@ -100,7 +101,7 @@ function Cell({ label, children, id }: { label: string; children: React.ReactNod
   );
 }
 
-function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
+export function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
     <section className="space-y-4">
       <div>
@@ -137,7 +138,8 @@ export default function KitchenSink() {
       <div>
         <h1 className="text-foreground text-2xl font-semibold">Kitchen sink</h1>
         <p className="text-muted-foreground text-sm">
-          Every state of the /trips view from fixtures. Hover and Tab through the controls to check hover and focus.
+          Every state of the /trips view and the auth screens from fixtures. Hover and Tab through the controls to check
+          hover and focus.
         </p>
       </div>
 
