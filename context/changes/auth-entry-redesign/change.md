@@ -1,7 +1,7 @@
 ---
 change_id: auth-entry-redesign
 title: Entry point and auth screens on the light travel theme
-status: impl_reviewed
+status: implemented
 created: 2026-09-30
 updated: 2026-11-15
 archived_at: null
