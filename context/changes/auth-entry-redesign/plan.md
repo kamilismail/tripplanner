@@ -429,7 +429,7 @@ utility.
 - Lint passes: `npm run lint`
 - Type check passes: `npx astro check`
 - Build passes: `npm run build`
-- The auth files scan clean with `node scripts/check-ui-literals.mjs <auth files>`, where the files are: `src/pages/auth/signin.astro src/pages/auth/signup.astro src/pages/auth/confirm-email.astro src/layouts/AuthLayout.astro src/components/auth/AuthCard.astro src/layouts/Layout.astro src/components/Banner.astro src/pages/index.astro src/components/auth/FormField.tsx src/components/auth/PasswordToggle.tsx src/components/auth/ServerError.tsx src/components/auth/SignInForm.tsx src/components/auth/SignUpForm.tsx src/components/auth/SubmitButton.tsx`
+- The auth files scan clean with `node scripts/check-ui-literals.mjs <auth files>`, where the files are: `src/pages/auth/signin.astro src/pages/auth/signup.astro src/pages/auth/confirm-email.astro src/layouts/AuthLayout.astro src/components/auth/AuthCard.astro src/layouts/Layout.astro src/components/Banner.astro src/pages/index.ts src/components/auth/FormField.tsx src/components/auth/PasswordToggle.tsx src/components/auth/ServerError.tsx src/components/auth/SignInForm.tsx src/components/auth/SignUpForm.tsx src/components/auth/SubmitButton.tsx`
 - No `bg-cosmic` or `useFormStatus` remains: `grep -rn "bg-cosmic\|useFormStatus" src` returns nothing
 - Smoke still passes: `npm run smoke`
 
@@ -511,7 +511,7 @@ scan plus pre-commit are extended so the next change keeps the auth screens on t
 
 **Contract**:
 
-- `defaultFiles()` adds `src/pages/index.astro`, `src/pages/auth/*.astro`, `src/layouts/AuthLayout.astro`,
+- `defaultFiles()` adds `src/pages/index.ts` (Phase 1 replaced `index.astro` with a redirect endpoint), `src/pages/auth/*.astro`, `src/layouts/AuthLayout.astro`,
   `src/layouts/Layout.astro`, `src/components/Banner.astro` and every `src/components/auth/*.{tsx,astro}`. Directory
   listings follow the existing `trips` pattern.
 - The lint-staged glob for `lint:ui` gets the same paths.
@@ -622,21 +622,21 @@ request.
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Type check passes: `npx astro check`
-- [x] 2.3 Build passes: `npm run build`
-- [x] 2.4 The auth files scan clean with `node scripts/check-ui-literals.mjs <auth files>`
-- [x] 2.5 No `bg-cosmic` or `useFormStatus` remains: `grep -rn "bg-cosmic\|useFormStatus" src` returns nothing
-- [x] 2.6 Smoke still passes: `npm run smoke`
+- [x] 2.1 Lint passes: `npm run lint` — 51d0a13
+- [x] 2.2 Type check passes: `npx astro check` — 51d0a13
+- [x] 2.3 Build passes: `npm run build` — 51d0a13
+- [x] 2.4 The auth files scan clean with `node scripts/check-ui-literals.mjs <auth files>` — 51d0a13
+- [x] 2.5 No `bg-cosmic` or `useFormStatus` remains: `grep -rn "bg-cosmic\|useFormStatus" src` returns nothing — 51d0a13
+- [x] 2.6 Smoke still passes: `npm run smoke` — 51d0a13
 
 #### Manual
 
-- [x] 2.7 The sign-in, sign-up and confirm-email screens match the light travel theme at desktop and 375 px width, with no horizontal scroll
-- [x] 2.8 Keyboard: Tab order is email → password → toggle → submit → footer link, and every focusable element shows the `ring-ring` focus ring
-- [x] 2.9 A valid submit shows the disabled button with a spinner; pressing Back from `/trips` after sign-in either redirects to `/trips` again or (bfcache restore) shows an enabled button, never a stuck disabled one
-- [x] 2.10 A client validation error sets `aria-invalid`, and the accessibility tree reads the error as the field description
-- [x] 2.11 With `SUPABASE_URL` unset, the English Banner shows above the panel and the page does not scroll vertically on desktop
-- [x] 2.12 `/trips` header and layout look unchanged after the `Layout.astro` body change
+- [x] 2.7 The sign-in, sign-up and confirm-email screens match the light travel theme at desktop and 375 px width, with no horizontal scroll — 51d0a13
+- [x] 2.8 Keyboard: Tab order is email → password → toggle → submit → footer link, and every focusable element shows the `ring-ring` focus ring — 51d0a13
+- [x] 2.9 A valid submit shows the disabled button with a spinner; pressing Back from `/trips` after sign-in either redirects to `/trips` again or (bfcache restore) shows an enabled button, never a stuck disabled one — 51d0a13
+- [x] 2.10 A client validation error sets `aria-invalid`, and the accessibility tree reads the error as the field description — 51d0a13
+- [x] 2.11 With `SUPABASE_URL` unset, the English Banner shows above the panel and the page does not scroll vertically on desktop — 51d0a13
+- [x] 2.12 `/trips` header and layout look unchanged after the `Layout.astro` body change — 51d0a13
 
 ### Phase 3: Visual gate and guard
 

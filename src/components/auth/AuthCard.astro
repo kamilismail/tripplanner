@@ -4,16 +4,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 interface Props {
   title: string;
   description?: string;
+  /** Heading level of the card title; the auth pages use 1, embeds (kitchen sink) pass a lower level. */
+  headingLevel?: 1 | 2 | 3;
 }
 
-const { title, description } = Astro.props;
+const { title, description, headingLevel = 1 } = Astro.props;
 const hasFooter = Astro.slots.has("footer");
 ---
 
 {/* Static React render: Astro's React renderer drops `class`, so Card* take `className`. */}
 <Card className="w-full max-w-sm">
   <CardHeader className="text-center">
-    <CardTitle role="heading" aria-level={1} className="text-xl">
+    <CardTitle role="heading" aria-level={headingLevel} className="text-xl">
       {title}
     </CardTitle>
     {description && <CardDescription>{description}</CardDescription>}

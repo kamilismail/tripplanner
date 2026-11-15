@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useId, useState } from "react";
 import { Mail, Lock, UserPlus } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
+import { usePendingSubmit } from "@/components/hooks/usePendingSubmit";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth";
 
 interface Props {
@@ -11,24 +12,14 @@ interface Props {
 }
 
 export default function SignUpForm({ serverError }: Props) {
+  const uid = useId();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
-  const [submitting, setSubmitting] = useState(false);
-
-  // Back/Forward can restore this page from bfcache with the button still pending.
-  useEffect(() => {
-    function handlePageShow(event: PageTransitionEvent) {
-      if (event.persisted) setSubmitting(false);
-    }
-    window.addEventListener("pageshow", handlePageShow);
-    return () => {
-      window.removeEventListener("pageshow", handlePageShow);
-    };
-  }, []);
+  const [submitting, startSubmitting] = usePendingSubmit();
 
   function validate() {
     const next: typeof errors = {};
@@ -52,7 +43,7 @@ export default function SignUpForm({ serverError }: Props) {
     }
 
     setErrors(next);
-    return Object.keys(next).length === 0;
+    return Object.keys(next) as (keyof typeof errors)[];
   }
 
   function clearError(field: keyof typeof errors) {
@@ -60,11 +51,17 @@ export default function SignUpForm({ serverError }: Props) {
   }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    if (!validate()) {
+    const invalid = validate();
+    if (invalid.length > 0) {
       e.preventDefault();
+      // Move focus to the first invalid field once its error is rendered, so screen readers announce it.
+      const form = e.currentTarget;
+      setTimeout(() => {
+        form.querySelector<HTMLInputElement>(`[name="${invalid[0]}"]`)?.focus();
+      }, 0);
       return;
     }
-    setSubmitting(true);
+    startSubmitting();
   }
 
   const passwordHint =
@@ -78,7 +75,8 @@ export default function SignUpForm({ serverError }: Props) {
   return (
     <form method="POST" action="/api/auth/signup" className="space-y-4" onSubmit={handleSubmit} noValidate>
       <FormField
-        id="email"
+        id={`${uid}-email`}
+        name="email"
         type="email"
         label="Email"
         value={email}
@@ -93,7 +91,8 @@ export default function SignUpForm({ serverError }: Props) {
       />
 
       <FormField
-        id="password"
+        id={`${uid}-password`}
+        name="password"
         label="Password"
         type={showPassword ? "text" : "password"}
         value={password}
@@ -117,7 +116,7 @@ export default function SignUpForm({ serverError }: Props) {
       />
 
       <FormField
-        id="confirmPassword"
+        id={`${uid}-confirmPassword`}
         name="confirmPassword"
         label="Confirm password"
         type={showConfirmPassword ? "text" : "password"}

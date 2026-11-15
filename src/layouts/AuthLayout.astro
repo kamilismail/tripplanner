@@ -11,7 +11,7 @@ interface Props {
 const { title, description } = Astro.props;
 ---
 
-<Layout title={title}>
+<Layout title={`${title} · TripPlanner`}>
   <div class="bg-background text-foreground flex flex-1 flex-col items-center justify-center gap-6 p-4">
     <div class="text-foreground flex items-center gap-2 font-semibold">
       <Compass aria-hidden="true" className="text-primary size-6" />

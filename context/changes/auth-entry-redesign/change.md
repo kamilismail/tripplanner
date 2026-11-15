@@ -43,3 +43,9 @@ Change A of two agreed with the user on 2026-09-30. It picks up the deferred ite
 
 - `/trips` split, `/trips/new`, highlight, unsaved-plan warning (change B).
 - Split-screen auth layout, password reset, OAuth providers, dark mode toggle.
+
+## Contrast check (Phase 2, 2026-11-15)
+
+Banner `text-destructive` on `bg-destructive/10` over `background`, computed from the `global.css` oklch tokens:
+light 4.57:1 (sRGB mix) / 4.67:1 (oklab mix, Tailwind 4 `color-mix`); dark 6.19:1. AA passes (≥ 4.5), but with
+little headroom in light. Any darker tint or lighter `--destructive` needs a re-check. No new token.

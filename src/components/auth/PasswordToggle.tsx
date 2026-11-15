@@ -14,7 +14,7 @@ export function PasswordToggle({ visible, onToggle }: PasswordToggleProps) {
       size="icon"
       onClick={onToggle}
       className="text-muted-foreground absolute top-0 right-0"
-      aria-label={visible ? "Hide password" : "Show password"}
+      aria-label="Show password"
       aria-pressed={visible}
     >
       {visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
