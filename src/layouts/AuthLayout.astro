@@ -1,0 +1,25 @@
+---
+import { Compass } from "lucide-react";
+import Layout from "@/layouts/Layout.astro";
+import AuthCard from "@/components/auth/AuthCard.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<Layout title={title}>
+  <div class="bg-background text-foreground flex flex-1 flex-col items-center justify-center gap-6 p-4">
+    <div class="text-foreground flex items-center gap-2 font-semibold">
+      <Compass aria-hidden="true" className="text-primary size-6" />
+      <span>TripPlanner</span>
+    </div>
+    <AuthCard title={title} description={description}>
+      <slot />
+      {Astro.slots.has("footer") && <slot name="footer" slot="footer" />}
+    </AuthCard>
+  </div>
+</Layout>

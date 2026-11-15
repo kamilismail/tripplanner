@@ -622,21 +622,21 @@ request.
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Type check passes: `npx astro check`
-- [ ] 2.3 Build passes: `npm run build`
-- [ ] 2.4 The auth files scan clean with `node scripts/check-ui-literals.mjs <auth files>`
-- [ ] 2.5 No `bg-cosmic` or `useFormStatus` remains: `grep -rn "bg-cosmic\|useFormStatus" src` returns nothing
-- [ ] 2.6 Smoke still passes: `npm run smoke`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Type check passes: `npx astro check`
+- [x] 2.3 Build passes: `npm run build`
+- [x] 2.4 The auth files scan clean with `node scripts/check-ui-literals.mjs <auth files>`
+- [x] 2.5 No `bg-cosmic` or `useFormStatus` remains: `grep -rn "bg-cosmic\|useFormStatus" src` returns nothing
+- [x] 2.6 Smoke still passes: `npm run smoke`
 
 #### Manual
 
-- [ ] 2.7 The sign-in, sign-up and confirm-email screens match the light travel theme at desktop and 375 px width, with no horizontal scroll
-- [ ] 2.8 Keyboard: Tab order is email → password → toggle → submit → footer link, and every focusable element shows the `ring-ring` focus ring
-- [ ] 2.9 A valid submit shows the disabled button with a spinner; pressing Back from `/trips` after sign-in either redirects to `/trips` again or (bfcache restore) shows an enabled button, never a stuck disabled one
-- [ ] 2.10 A client validation error sets `aria-invalid`, and the accessibility tree reads the error as the field description
-- [ ] 2.11 With `SUPABASE_URL` unset, the English Banner shows above the panel and the page does not scroll vertically on desktop
-- [ ] 2.12 `/trips` header and layout look unchanged after the `Layout.astro` body change
+- [x] 2.7 The sign-in, sign-up and confirm-email screens match the light travel theme at desktop and 375 px width, with no horizontal scroll
+- [x] 2.8 Keyboard: Tab order is email → password → toggle → submit → footer link, and every focusable element shows the `ring-ring` focus ring
+- [x] 2.9 A valid submit shows the disabled button with a spinner; pressing Back from `/trips` after sign-in either redirects to `/trips` again or (bfcache restore) shows an enabled button, never a stuck disabled one
+- [x] 2.10 A client validation error sets `aria-invalid`, and the accessibility tree reads the error as the field description
+- [x] 2.11 With `SUPABASE_URL` unset, the English Banner shows above the panel and the page does not scroll vertically on desktop
+- [x] 2.12 `/trips` header and layout look unchanged after the `Layout.astro` body change
 
 ### Phase 3: Visual gate and guard
 

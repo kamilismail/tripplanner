@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Mail, Lock, UserPlus } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
@@ -17,6 +17,18 @@ export default function SignUpForm({ serverError }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  // Back/Forward can restore this page from bfcache with the button still pending.
+  useEffect(() => {
+    function handlePageShow(event: PageTransitionEvent) {
+      if (event.persisted) setSubmitting(false);
+    }
+    window.addEventListener("pageshow", handlePageShow);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, []);
 
   function validate() {
     const next: typeof errors = {};
@@ -50,12 +62,14 @@ export default function SignUpForm({ serverError }: Props) {
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     if (!validate()) {
       e.preventDefault();
+      return;
     }
+    setSubmitting(true);
   }
 
   const passwordHint =
     !errors.password && password.length > 0 && password.length < MIN_PASSWORD_LENGTH ? (
-      <p className="mt-1 text-xs text-blue-100/50">
+      <p className="text-muted-foreground mt-1 text-xs">
         {MIN_PASSWORD_LENGTH - password.length} more character
         {MIN_PASSWORD_LENGTH - password.length !== 1 ? "s" : ""} needed
       </p>
@@ -73,6 +87,7 @@ export default function SignUpForm({ serverError }: Props) {
           clearError("email");
         }}
         placeholder="you@example.com"
+        autoComplete="email"
         error={errors.email}
         icon={<Mail className="size-4" />}
       />
@@ -87,6 +102,7 @@ export default function SignUpForm({ serverError }: Props) {
           clearError("password");
         }}
         placeholder="Min. 6 characters"
+        autoComplete="new-password"
         error={errors.password}
         hint={passwordHint}
         icon={<Lock className="size-4" />}
@@ -111,6 +127,7 @@ export default function SignUpForm({ serverError }: Props) {
           clearError("confirmPassword");
         }}
         placeholder="Re-enter your password"
+        autoComplete="new-password"
         error={errors.confirmPassword}
         icon={<Lock className="size-4" />}
         endContent={
@@ -125,7 +142,7 @@ export default function SignUpForm({ serverError }: Props) {
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Creating account..." icon={<UserPlus className="size-4" />}>
+      <SubmitButton pending={submitting} pendingText="Creating account..." icon={<UserPlus className="size-4" />}>
         Create account
       </SubmitButton>
     </form>

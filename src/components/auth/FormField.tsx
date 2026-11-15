@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
 import { CircleAlert } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
-const inputBase =
-  "w-full rounded-lg bg-white/10 border px-3 py-2 pl-10 text-white placeholder-white/40 focus:outline-none focus:ring-2 transition-colors";
 
 interface FormFieldProps {
   id: string;
@@ -13,6 +11,7 @@ interface FormFieldProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  autoComplete?: string;
   error?: string;
   hint?: ReactNode;
   icon: ReactNode;
@@ -27,19 +26,26 @@ export function FormField({
   value,
   onChange,
   placeholder,
+  autoComplete,
   error,
   hint,
   icon,
   endContent,
 }: FormFieldProps) {
+  const errorId = `${id}-error`;
+  const hintId = `${id}-hint`;
+  const describedBy = error ? errorId : hint ? hintId : undefined;
+
   return (
     <div>
-      <label htmlFor={id} className="mb-1 block text-sm text-blue-100/80">
+      <label htmlFor={id} className="mb-1.5 block text-sm font-medium">
         {label}
       </label>
       <div className="relative">
-        <span className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-white/40">{icon}</span>
-        <input
+        <span className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 flex size-4 -translate-y-1/2 items-center">
+          {icon}
+        </span>
+        <Input
           id={id}
           name={name ?? id}
           type={type}
@@ -48,20 +54,20 @@ export function FormField({
             onChange(e.target.value);
           }}
           placeholder={placeholder}
-          className={cn(
-            inputBase,
-            error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
-          )}
+          autoComplete={autoComplete}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
+          className={cn("pl-9", endContent && "pr-10")}
         />
         {endContent}
       </div>
       {error ? (
-        <p className="mt-1 flex items-center gap-1 text-xs text-red-300">
-          <CircleAlert className="size-3" />
+        <p id={errorId} className="text-destructive mt-1 flex items-center gap-1 text-xs">
+          <CircleAlert aria-hidden="true" className="size-3" />
           {error}
         </p>
       ) : (
-        hint
+        hint && <div id={hintId}>{hint}</div>
       )}
     </div>
   );

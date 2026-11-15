@@ -8,6 +8,7 @@ interface Props {
 }
 
 const { title = "TripPlanner" } = Astro.props;
+// body is a min-screen flex column, so a page wrapper can `flex-1` into the height left under the Banner.
 ---
 
 <!doctype html>
@@ -24,15 +25,15 @@ const { title = "TripPlanner" } = Astro.props;
     />
     <title>{title}</title>
   </head>
-  <body>
+  <body class="m-0 flex min-h-screen flex-col">
     {missingConfigs.map((cfg) => (
-      <Banner variant="error">
-        <strong>Uwaga:</strong> {cfg.message}
+      <Banner>
+        <strong>Warning:</strong> {cfg.message}
         {cfg.docsUrl && (
           <>
             {" "}
-            <a href={cfg.docsUrl} target="_blank" rel="noopener noreferrer">
-              {cfg.docsLabel ?? "Dokumentacja"}
+            <a href={cfg.docsUrl} target="_blank" rel="noopener noreferrer" class="font-semibold underline">
+              {cfg.docsLabel ?? "Documentation"}
             </a>
             .
           </>
@@ -42,12 +43,3 @@ const { title = "TripPlanner" } = Astro.props;
     <slot />
   </body>
 </html>
-
-<style>
-  html,
-  body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-  }
-</style>

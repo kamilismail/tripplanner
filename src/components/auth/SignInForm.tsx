@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
@@ -14,6 +14,18 @@ export default function SignInForm({ serverError }: Props) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  // Back/Forward can restore this page from bfcache with the button still pending.
+  useEffect(() => {
+    function handlePageShow(event: PageTransitionEvent) {
+      if (event.persisted) setSubmitting(false);
+    }
+    window.addEventListener("pageshow", handlePageShow);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, []);
 
   function validate() {
     const next: typeof errors = {};
@@ -36,7 +48,9 @@ export default function SignInForm({ serverError }: Props) {
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     if (!validate()) {
       e.preventDefault();
+      return;
     }
+    setSubmitting(true);
   }
 
   return (
@@ -51,6 +65,7 @@ export default function SignInForm({ serverError }: Props) {
           clearError("email");
         }}
         placeholder="you@example.com"
+        autoComplete="email"
         error={errors.email}
         icon={<Mail className="size-4" />}
       />
@@ -65,6 +80,7 @@ export default function SignInForm({ serverError }: Props) {
           clearError("password");
         }}
         placeholder="Your password"
+        autoComplete="current-password"
         error={errors.password}
         icon={<Lock className="size-4" />}
         endContent={
@@ -79,7 +95,7 @@ export default function SignInForm({ serverError }: Props) {
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Signing in..." icon={<LogIn className="size-4" />}>
+      <SubmitButton pending={submitting} pendingText="Signing in..." icon={<LogIn className="size-4" />}>
         Sign in
       </SubmitButton>
     </form>

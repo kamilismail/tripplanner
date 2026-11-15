@@ -1,0 +1,29 @@
+---
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const hasFooter = Astro.slots.has("footer");
+---
+
+{/* Static React render: Astro's React renderer drops `class`, so Card* take `className`. */}
+<Card className="w-full max-w-sm">
+  <CardHeader className="text-center">
+    <CardTitle role="heading" aria-level={1} className="text-xl">
+      {title}
+    </CardTitle>
+    {description && <CardDescription>{description}</CardDescription>}
+  </CardHeader>
+  <CardContent>
+    <slot />
+  </CardContent>
+  {hasFooter && (
+    <CardFooter className="text-muted-foreground justify-center text-sm">
+      <slot name="footer" />
+    </CardFooter>
+  )}
+</Card>
