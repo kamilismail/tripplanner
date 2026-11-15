@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run format` — Prettier (includes prettier-plugin-astro + prettier-plugin-tailwindcss)
 - `npm run smoke` — dependency-free auth-flow smoke test (`scripts/smoke.mjs`) against a running server, `BASE_URL` env (default `http://localhost:4321`). Run after dependency upgrades; CI runs it against the production preview with a local Supabase.
 
-Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`, plus the UI literal scan (`lint:ui`) on the `/trips` view files and the auth screens.
+Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`, plus the UI literal scan (`lint:ui`) on the `/trips` view files, the auth screens and the kitchen sink (`src/pages/dev/*.astro`).
 
 No test suite exists yet — `smoke` is a sanity check for the starter itself, not application tests.
 
@@ -65,7 +65,7 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint + build on every 
 - W widokach zakaz literałów: hex/`rgb()`/`hsl()`/`oklch()`, klas palety Tailwind (`text-purple-300`, `bg-white`…) i wartości arbitralnych (`p-[12px]`, `ring-[3px]`). Tylko klasy tokenów (`bg-card`, `text-muted-foreground`, `ring-ring`) i warianty komponentów.
 - Strony dla zalogowanych renderuj w `src/layouts/AppLayout.astro` (nagłówek z nawigacją i wylogowaniem), strony dla niezalogowanych (`/auth/*`) w `src/layouts/AuthLayout.astro`.
 - Bramka wizualna: `/dev/kitchen-sink` (tylko `npm run dev`, w produkcji 404) pokazuje 7 stanów widoku `/trips` i ekranów auth (formularze logowania i rejestracji, potwierdzenie e-maila, Banner). Nowy stan lub komponent widoku = nowa sekcja tam.
-- `npm run lint:ui` (`scripts/check-ui-literals.mjs`) skanuje widoki pod kątem literałów; pre-commit uruchamia go na zmienionych plikach `/trips`, `AppLayout`, `AppHeader`, `src/components/trips/*.tsx` oraz ekranów auth (`src/pages/index.ts`, `src/pages/auth/*.astro`, `AuthLayout`, `Layout`, `Banner`, `src/components/auth/*`).
+- `npm run lint:ui` (`scripts/check-ui-literals.mjs`) skanuje widoki pod kątem literałów; pre-commit uruchamia go na zmienionych plikach `/trips`, `AppLayout`, `AppHeader`, `src/components/trips/*.tsx` oraz ekranów auth (`src/pages/index.ts`, `src/pages/auth/*.astro`, `AuthLayout`, `Layout`, `Banner`, `ConfigBanner`, `src/components/auth/*`), a także kitchen sink (`src/pages/dev/*.astro`).
 
 <!-- BEGIN @przeprogramowani/10x-cli -->
 

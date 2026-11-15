@@ -1,5 +1,6 @@
 ---
-// Dev-only visual gate for the /trips view and the auth screens. src/middleware.ts 404s /dev/* outside dev.
+// Dev-only visual gate for the /trips view and the auth screens. src/middleware.ts 404s /dev/* outside dev,
+// and the guard below repeats that here so a middleware refactor cannot ship the page.
 // Not in PROTECTED_ROUTES: it renders fixtures only and needs no session.
 // The KitchenSink / AuthKitchenSink client chunks are still emitted to dist/client/_astro; they hold fixtures only
 // (no secrets, no API calls; the auth forms run in demo mode and never post).
@@ -8,59 +9,49 @@ import KitchenSink, { Cell, Section } from "@/components/trips/KitchenSink";
 import AuthKitchenSink from "@/components/auth/AuthKitchenSink";
 import AuthCard from "@/components/auth/AuthCard.astro";
 import ConfirmEmailBody from "@/components/auth/ConfirmEmailBody.astro";
-import Banner from "@/components/Banner.astro";
+import ConfigBanner from "@/components/ConfigBanner.astro";
 import { buttonVariants } from "@/components/ui/button";
 import { configStatuses } from "@/lib/config-status";
 import { cn } from "@/lib/utils";
 
-// The Supabase entry, shown whether or not it is configured here; markup mirrors Layout.astro.
+// The Supabase entry, shown whether or not it is configured here; ConfigBanner is the same component Layout.astro uses.
 const supabaseConfig = configStatuses[0];
+
+// No `return` here: it crashes typescript-eslint on .astro frontmatter (see src/pages/index.ts).
+const isDev = import.meta.env.DEV;
+if (!isDev) Astro.response.status = 404;
 ---
 
-<AppLayout title="Kitchen sink · TripPlanner" userEmail="traveller@example.com">
-  <div class="space-y-10">
-    {/* Islands render as display:contents, so each gets a wrapper for space-y to apply. */}
-    <div>
-      <KitchenSink client:load />
-    </div>
-    <div>
-      <AuthKitchenSink client:load />
-    </div>
+{isDev && (
+  <AppLayout title="Kitchen sink · TripPlanner" userEmail="traveller@example.com">
+    <div class="space-y-10">
+      {/* Islands render as display:contents, so each gets a wrapper for space-y to apply. */}
+      <div>
+        <KitchenSink client:load />
+      </div>
+      <div>
+        <AuthKitchenSink client:load />
+      </div>
 
-    <Section
-      title="Confirm email"
-      note="Success: sign-up with a session redirects to /trips and has no screen of its own."
-    >
-      <Cell label="Success">
-        <AuthCard title="Check your email" headingLevel={3}>
-          <ConfirmEmailBody />
-          <a slot="footer" href="/auth/signin" class:list={[cn(buttonVariants({ variant: "link" }), "h-auto p-0")]}>
-            Back to sign in
-          </a>
-        </AuthCard>
-      </Cell>
-    </Section>
+      <Section
+        title="Confirm email"
+        note="Success: sign-up with a session redirects to /trips and has no screen of its own."
+      >
+        <Cell label="Success">
+          <AuthCard title="Check your email" headingLevel={3}>
+            <ConfirmEmailBody />
+            <a slot="footer" href="/auth/signin" class:list={[cn(buttonVariants({ variant: "link" }), "h-auto p-0")]}>
+              Back to sign in
+            </a>
+          </AuthCard>
+        </Cell>
+      </Section>
 
-    <Section title="Missing config" note="The Banner Layout.astro renders above every page when a config is missing.">
-      <Cell label="Banner">
-        <Banner>
-          <strong>Warning:</strong> {supabaseConfig.message}
-          {supabaseConfig.docsUrl && (
-            <>
-              {" "}
-              <a
-                href={supabaseConfig.docsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="font-semibold underline"
-              >
-                {supabaseConfig.docsLabel ?? "Documentation"}
-              </a>
-              .
-            </>
-          )}
-        </Banner>
-      </Cell>
-    </Section>
-  </div>
-</AppLayout>
+      <Section title="Missing config" note="The Banner Layout.astro renders above every page when a config is missing.">
+        <Cell label="Banner">
+          <ConfigBanner config={supabaseConfig} />
+        </Cell>
+      </Section>
+    </div>
+  </AppLayout>
+)}

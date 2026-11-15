@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import Banner from "@/components/Banner.astro";
+import ConfigBanner from "@/components/ConfigBanner.astro";
 import { missingConfigs } from "@/lib/config-status";
 
 interface Props {
@@ -27,18 +27,7 @@ const { title = "TripPlanner" } = Astro.props;
   </head>
   <body class="m-0 flex min-h-screen flex-col">
     {missingConfigs.map((cfg) => (
-      <Banner>
-        <strong>Warning:</strong> {cfg.message}
-        {cfg.docsUrl && (
-          <>
-            {" "}
-            <a href={cfg.docsUrl} target="_blank" rel="noopener noreferrer" class="font-semibold underline">
-              {cfg.docsLabel ?? "Documentation"}
-            </a>
-            .
-          </>
-        )}
-      </Banner>
+      <ConfigBanner config={cfg} />
     ))}
     <slot />
   </body>

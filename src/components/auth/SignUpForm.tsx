@@ -121,7 +121,7 @@ export default function SignUpForm({
           setPassword(v);
           clearError("password");
         }}
-        placeholder="Min. 6 characters"
+        placeholder={`Min. ${MIN_PASSWORD_LENGTH} characters`}
         autoComplete="new-password"
         error={errors.password}
         hint={passwordHint}

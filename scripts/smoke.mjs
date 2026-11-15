@@ -51,6 +51,12 @@ const steps = [
   ],
   ["home redirects signed-in user to trips", () => request("/"), { status: 302, location: "/trips" }],
   ["signin page redirects signed-in user", () => request("/auth/signin"), { status: 302, location: "/trips" }],
+  ["signup page redirects signed-in user", () => request("/auth/signup"), { status: 302, location: "/trips" }],
+  [
+    "signin page with trailing slash redirects signed-in user",
+    () => request("/auth/signin/"),
+    { status: 302, location: "/trips" },
+  ],
   [
     "signout after signup",
     () => request("/api/auth/signout", { method: "POST" }),

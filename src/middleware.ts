@@ -9,7 +9,7 @@ const DEV_ONLY_PREFIX = "/dev/";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   if (!import.meta.env.DEV && context.url.pathname.startsWith(DEV_ONLY_PREFIX)) {
-    return new Response(null, { status: 404 });
+    return context.rewrite("/404");
   }
 
   const supabase = createClient(context.request.headers, context.cookies);

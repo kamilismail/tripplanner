@@ -9,7 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const EMAIL = "traveller@example.com";
 const PASSWORD = "correct-horse";
 
-/** The auth card frame (same width as AuthCard.astro), so the forms render as on the real page. */
+/**
+ * The auth card frame, so the forms render as on the real page. React cannot render AuthCard.astro, so this is a
+ * copy: keep it in sync with src/components/auth/AuthCard.astro (Card width, header classes, heading role).
+ */
 function AuthFrame({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <Card className="w-full max-w-sm">
