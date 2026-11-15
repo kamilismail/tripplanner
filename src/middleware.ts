@@ -1,7 +1,9 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
 
-const PROTECTED_ROUTES = ["/dashboard", "/trips", "/api/trips"];
+const PROTECTED_ROUTES = ["/trips", "/api/trips"];
+// Pages a signed-in user has no use for; exact paths, so /api/auth/* (the form POST targets) is never caught.
+const GUEST_ONLY_ROUTES = ["/auth/signin", "/auth/signup"];
 // Dev-only fixture pages (e.g. /dev/kitchen-sink): SSR would otherwise ship them to production.
 const DEV_ONLY_PREFIX = "/dev/";
 
@@ -19,6 +21,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.user = user ?? null;
   } else {
     context.locals.user = null;
+  }
+
+  // Runs after the user is resolved: the redirect depends on the session.
+  const normalizedPath =
+    context.url.pathname.length > 1 ? context.url.pathname.replace(/\/+$/, "") : context.url.pathname;
+  if (context.locals.user && GUEST_ONLY_ROUTES.includes(normalizedPath)) {
+    return context.redirect("/trips");
   }
 
   if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {

@@ -64,8 +64,11 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
   // The generated plan lives only here until accepted — never persisted as a draft.
   const [plan, setPlan] = useState<GeneratedTripPlan | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Set alongside an error that came from an expired session (401 or a redirect to sign-in).
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSessionExpired, setSaveSessionExpired] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const reviewHeadingRef = useRef<HTMLHeadingElement>(null);
   const cityInputRef = useRef<HTMLInputElement>(null);
@@ -88,6 +91,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
     setSubmitted(request);
     setStatus("loading");
     setError(null);
+    setSessionExpired(false);
     setSuccessMessage(null);
 
     try {
@@ -101,6 +105,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
       if (response.redirected || !response.ok) {
         const status = response.redirected ? 401 : response.status;
         setError(generationErrorMessage(status, await readErrorCode(response)));
+        setSessionExpired(status === 401);
         setStatus("error");
         return;
       }
@@ -115,6 +120,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
 
       setPlan(generated);
       setSaveError(null);
+      setSaveSessionExpired(false);
       setStatus("review");
     } catch {
       setError(NETWORK_ERROR);
@@ -138,6 +144,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
     if (!plan) return;
     setIsSaving(true);
     setSaveError(null);
+    setSaveSessionExpired(false);
 
     try {
       const response = await fetch("/api/trips", {
@@ -147,7 +154,9 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
       });
 
       if (response.redirected || !response.ok) {
-        setSaveError(saveErrorMessage(response.redirected ? 401 : response.status));
+        const status = response.redirected ? 401 : response.status;
+        setSaveError(saveErrorMessage(status));
+        setSaveSessionExpired(status === 401);
         return;
       }
 
@@ -170,6 +179,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
   function handleDiscard() {
     setPlan(null);
     setSaveError(null);
+    setSaveSessionExpired(false);
     if (submitted) form.fill(submitted);
     returnFocusToForm.current = true;
     setStatus("idle");
@@ -198,6 +208,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
           plan={plan}
           isSaving={isSaving}
           saveError={saveError}
+          sessionExpired={saveSessionExpired}
           headingRef={reviewHeadingRef}
           onAccept={() => void handleAccept()}
           onDiscard={handleDiscard}
@@ -218,6 +229,7 @@ export default function TripGeneratorFlow({ onTripSaved }: Props) {
         isLoading={isLoading}
         submitted={submitted}
         error={status === "error" ? error : null}
+        sessionExpired={status === "error" && sessionExpired}
         successMessage={successMessage}
         onCityChange={form.setCity}
         onDayCountChange={form.setDayCount}

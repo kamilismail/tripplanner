@@ -87,6 +87,7 @@ function fixtureTrips(section: string): TripWithPoints[] {
 }
 
 const LIST_ERROR = "We couldn't load your trips. Please try again.";
+const SESSION_EXPIRED = "Your session has expired. Please sign in again.";
 
 function Cell({ label, children, id }: { label: string; children: React.ReactNode; id?: string }) {
   return (
@@ -244,6 +245,9 @@ export default function KitchenSink() {
         </Cell>
         <Cell label="Error (first load)">
           <TripList trips={null} isLoading={false} error={LIST_ERROR} onRetry={noop} />
+        </Cell>
+        <Cell label="Session expired">
+          <TripList trips={null} isLoading={false} error={SESSION_EXPIRED} sessionExpired onRetry={noop} />
         </Cell>
         <Cell label="Empty">
           <TripList trips={[]} isLoading={false} error={null} onRetry={noop} />

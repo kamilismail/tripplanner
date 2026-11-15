@@ -12,7 +12,7 @@ interface Props {
 
 /** Lifts the trip list state so an accepted plan shows up in the list without a page reload. */
 export default function TripsPanel({ children }: Props) {
-  const { trips, isLoading, error, addTrip, refresh } = useTrips();
+  const { trips, isLoading, error, sessionExpired, addTrip, refresh } = useTrips();
   const [newTripId, setNewTripId] = useState<string | null>(null);
 
   const handleTripSaved = useCallback(
@@ -50,7 +50,14 @@ export default function TripsPanel({ children }: Props) {
             </h2>
           </CardHeader>
           <CardContent>
-            <TripList trips={trips} isLoading={isLoading} error={error} newTripId={newTripId} onRetry={refresh} />
+            <TripList
+              trips={trips}
+              isLoading={isLoading}
+              error={error}
+              sessionExpired={sessionExpired}
+              newTripId={newTripId}
+              onRetry={refresh}
+            />
           </CardContent>
         </Card>
       </section>

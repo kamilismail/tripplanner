@@ -6,6 +6,8 @@ export interface UseTripsResult {
   trips: TripWithPoints[] | null;
   isLoading: boolean;
   error: string | null;
+  /** True when `error` comes from an expired session (401 or a redirect to sign-in). */
+  sessionExpired: boolean;
   /** Shows a just-saved trip at the top immediately, without waiting for a re-fetch. */
   addTrip: (trip: TripWithPoints) => void;
   /** Re-fetches the list; the previous list stays visible while the refresh is in flight. */
@@ -24,6 +26,7 @@ export function useTrips(): UseTripsResult {
   // The refreshKey whose fetch last settled; loading is derived rather than set inside the effect.
   const [settledKey, setSettledKey] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   // Trips added locally after a save; kept on top if a fetch that started before the save resolves without them.
   const addedTripsRef = useRef<TripWithPoints[]>([]);
 
@@ -38,7 +41,9 @@ export function useTrips(): UseTripsResult {
 
         // A redirect means the session expired and we landed on the sign-in page.
         if (response.redirected || !response.ok) {
-          setError(fetchErrorMessage(response.redirected ? 401 : response.status));
+          const status = response.redirected ? 401 : response.status;
+          setError(fetchErrorMessage(status));
+          setSessionExpired(status === 401);
           return;
         }
 
@@ -46,6 +51,7 @@ export function useTrips(): UseTripsResult {
         const body = (await response.json()) as unknown;
         if (!Array.isArray(body)) {
           setError(fetchErrorMessage(response.status));
+          setSessionExpired(false);
           return;
         }
 
@@ -55,9 +61,11 @@ export function useTrips(): UseTripsResult {
         addedTripsRef.current = addedTripsRef.current.filter((t) => !fetchedIds.has(t.id));
         setTrips([...addedTripsRef.current, ...fetched]);
         setError(null);
+        setSessionExpired(false);
       } catch {
         if (controller.signal.aborted) return;
         setError("Network error. Check your connection and try again.");
+        setSessionExpired(false);
       } finally {
         if (!controller.signal.aborted) setSettledKey(refreshKey);
       }
@@ -78,5 +86,5 @@ export function useTrips(): UseTripsResult {
     setRefreshKey((key) => key + 1);
   }, []);
 
-  return { trips, isLoading: settledKey !== refreshKey, error, addTrip, refresh };
+  return { trips, isLoading: settledKey !== refreshKey, error, sessionExpired, addTrip, refresh };
 }
