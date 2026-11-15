@@ -64,7 +64,7 @@
     "*.{json,css,md}": [
       "prettier --write"
     ],
-    "{src/pages/trips.astro,src/layouts/AppLayout.astro,src/components/AppHeader.astro,src/components/trips/*.tsx}": [
+    "{src/pages/trips.astro,src/layouts/AppLayout.astro,src/components/AppHeader.astro,src/components/trips/*.tsx,src/pages/index.ts,src/pages/auth/*.astro,src/layouts/AuthLayout.astro,src/layouts/Layout.astro,src/components/Banner.astro,src/components/ConfigBanner.astro,src/components/auth/*.{tsx,astro},src/pages/dev/*.astro}": [
       "node scripts/check-ui-literals.mjs"
     ]
   },

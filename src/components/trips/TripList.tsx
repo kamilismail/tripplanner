@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CalendarDays, ChevronDown, CircleAlert, RotateCcw, Sparkles } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import type { DayWithPoints, TripPoint, TripWithPoints } from "@/types";
 
 type Props = Pick<UseTripsResult, "trips" | "isLoading" | "error"> & {
+  /** The error comes from an expired session: offer a sign-in link instead of "Try again". */
+  sessionExpired?: boolean;
   /** Id of the trip saved in this visit; it starts expanded, is scrolled into view and briefly highlighted. */
   newTripId?: string | null;
   /** Re-fetches the list after a failed load. */
@@ -36,10 +38,19 @@ function plural(count: number, one: string, many: string): string {
   return `${count} ${count === 1 ? one : many}`;
 }
 
-export default function TripList({ trips, isLoading, error, newTripId = null, onRetry }: Props) {
+export default function TripList({
+  trips,
+  isLoading,
+  error,
+  sessionExpired = false,
+  newTripId = null,
+  onRetry,
+}: Props) {
   // First load: nothing to show yet.
   if (trips === null) {
-    if (error && !isLoading) return <ListError message={error} isLoading={isLoading} onRetry={onRetry} />;
+    if (error && !isLoading) {
+      return <ListError message={error} sessionExpired={sessionExpired} isLoading={isLoading} onRetry={onRetry} />;
+    }
     return (
       <div role="status" className="space-y-4">
         <span className="sr-only">Loading your trips...</span>
@@ -57,7 +68,7 @@ export default function TripList({ trips, isLoading, error, newTripId = null, on
   return (
     <div className="space-y-4" aria-busy={isLoading}>
       {/* A failed refresh keeps the last list visible and reports the error above it. */}
-      {error && <ListError message={error} isLoading={isLoading} onRetry={onRetry} />}
+      {error && <ListError message={error} sessionExpired={sessionExpired} isLoading={isLoading} onRetry={onRetry} />}
 
       {trips.length === 0 ? (
         <Card className="items-center gap-4 px-6 text-center shadow-none">
@@ -85,17 +96,34 @@ export default function TripList({ trips, isLoading, error, newTripId = null, on
   );
 }
 
-function ListError({ message, isLoading, onRetry }: { message: string; isLoading: boolean; onRetry: () => void }) {
+function ListError({
+  message,
+  sessionExpired,
+  isLoading,
+  onRetry,
+}: {
+  message: string;
+  sessionExpired: boolean;
+  isLoading: boolean;
+  onRetry: () => void;
+}) {
   return (
     <div className="space-y-3">
       <Alert variant="destructive">
         <CircleAlert aria-hidden="true" />
         <AlertDescription>{message}</AlertDescription>
       </Alert>
-      <Button type="button" variant="outline" onClick={onRetry} disabled={isLoading}>
-        {isLoading ? <Spinner /> : <RotateCcw className="size-4" />}
-        {isLoading ? "Retrying..." : "Try again"}
-      </Button>
+      {/* Retrying cannot help without a session; the way forward is signing in again. */}
+      {sessionExpired ? (
+        <a href="/auth/signin" className={buttonVariants({ variant: "link" })}>
+          Sign in
+        </a>
+      ) : (
+        <Button type="button" variant="outline" onClick={onRetry} disabled={isLoading}>
+          {isLoading ? <Spinner /> : <RotateCcw className="size-4" />}
+          {isLoading ? "Retrying..." : "Try again"}
+        </Button>
+      )}
     </div>
   );
 }

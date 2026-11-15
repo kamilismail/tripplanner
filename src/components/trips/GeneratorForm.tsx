@@ -1,10 +1,11 @@
 import React, { useId } from "react";
 import { CircleAlert, CircleCheck, RotateCcw, Sparkles } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { MAX_TRIP_DAYS, MIN_TRIP_DAYS } from "@/lib/services/itinerary-schema";
+import { cn } from "@/lib/utils";
 import type { GenerateTripRequest } from "@/types";
 
 interface Props {
@@ -16,8 +17,10 @@ interface Props {
   isLoading: boolean;
   /** The request being generated (or last generated); drives the loading hint and "Try again". */
   submitted: GenerateTripRequest | null;
-  /** Generation error; shown with a "Try again" button. */
+  /** Generation error; shown with a "Try again" button (hidden when the session expired). */
   error: string | null;
+  /** The error comes from an expired session: a "Sign in" link is shown next to the message. */
+  sessionExpired?: boolean;
   successMessage: string | null;
   onCityChange: (value: string) => void;
   onDayCountChange: (value: string) => void;
@@ -37,6 +40,7 @@ export default function GeneratorForm({
   isLoading,
   submitted,
   error,
+  sessionExpired = false,
   successMessage,
   onCityChange,
   onDayCountChange,
@@ -125,12 +129,21 @@ export default function GeneratorForm({
         <div className="space-y-3">
           <Alert variant="destructive">
             <CircleAlert aria-hidden="true" />
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>
+              {error}
+              {sessionExpired && (
+                <a href="/auth/signin" className={cn(buttonVariants({ variant: "link" }), "h-auto p-0")}>
+                  Sign in
+                </a>
+              )}
+            </AlertDescription>
           </Alert>
-          <Button type="button" variant="outline" onClick={onTryAgain} disabled={!submitted}>
-            <RotateCcw className="size-4" />
-            Try again
-          </Button>
+          {!sessionExpired && (
+            <Button type="button" variant="outline" onClick={onTryAgain} disabled={!submitted}>
+              <RotateCcw className="size-4" />
+              Try again
+            </Button>
+          )}
         </div>
       )}
     </div>

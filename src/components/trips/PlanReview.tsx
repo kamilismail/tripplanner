@@ -1,15 +1,18 @@
 import React, { useId } from "react";
 import { Check, CircleAlert, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import DayPointsList from "@/components/trips/DayPointsList";
+import { cn } from "@/lib/utils";
 import type { GeneratedTripPlan } from "@/types";
 
 interface Props {
   plan: GeneratedTripPlan;
   isSaving: boolean;
   saveError: string | null;
+  /** The save error comes from an expired session: a "Sign in" link is shown next to the message. */
+  sessionExpired?: boolean;
   /** The flow focuses the heading when the review appears, so keyboard users are not dropped at <body>. */
   headingRef?: React.Ref<HTMLHeadingElement>;
   onAccept: () => void;
@@ -17,7 +20,15 @@ interface Props {
 }
 
 /** A generated plan with Accept/Discard. Stateless: the flow owns saving and focus. */
-export default function PlanReview({ plan, isSaving, saveError, headingRef, onAccept, onDiscard }: Props) {
+export default function PlanReview({
+  plan,
+  isSaving,
+  saveError,
+  sessionExpired = false,
+  headingRef,
+  onAccept,
+  onDiscard,
+}: Props) {
   // Unique per instance, so several reviews can render on one page (the kitchen sink).
   const headingId = useId();
   const days = [...plan.days].sort((a, b) => a.day_number - b.day_number);
@@ -41,7 +52,14 @@ export default function PlanReview({ plan, isSaving, saveError, headingRef, onAc
       {saveError && (
         <Alert variant="destructive">
           <CircleAlert aria-hidden="true" />
-          <AlertDescription>{saveError}</AlertDescription>
+          <AlertDescription>
+            {saveError}
+            {sessionExpired && (
+              <a href="/auth/signin" className={cn(buttonVariants({ variant: "link" }), "h-auto p-0")}>
+                Sign in
+              </a>
+            )}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -50,7 +68,7 @@ export default function PlanReview({ plan, isSaving, saveError, headingRef, onAc
           <X className="size-4" />
           Discard
         </Button>
-        <Button type="button" onClick={onAccept} disabled={isSaving}>
+        <Button type="button" onClick={onAccept} disabled={isSaving || sessionExpired}>
           {isSaving ? <Spinner /> : <Check className="size-4" />}
           {isSaving ? "Saving..." : "Accept"}
         </Button>

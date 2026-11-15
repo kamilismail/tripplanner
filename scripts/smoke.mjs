@@ -36,12 +36,31 @@ async function request(path, { method = "GET", form } = {}) {
 }
 
 const steps = [
-  ["home renders", () => request("/"), { status: 200 }],
-  ["dashboard redirects anonymous user", () => request("/dashboard"), { status: 302, location: "/auth/signin" }],
+  ["home redirects anonymous user to sign-in", () => request("/"), { status: 302, location: "/auth/signin" }],
+  ["trips redirects anonymous user", () => request("/trips"), { status: 302, location: "/auth/signin" }],
+  ["trips API rejects anonymous user", () => request("/api/trips"), { status: 401 }],
   [
-    "signup creates account",
+    "signup rejects invalid email",
+    () => request("/api/auth/signup", { method: "POST", form: { email: "not-an-email", password } }),
+    { status: 302, location: "/auth/signup?error=" },
+  ],
+  [
+    "signup creates account and session",
     () => request("/api/auth/signup", { method: "POST", form: { email, password } }),
-    { status: 302, location: "/auth/confirm-email" },
+    { status: 302, location: "/trips" },
+  ],
+  ["home redirects signed-in user to trips", () => request("/"), { status: 302, location: "/trips" }],
+  ["signin page redirects signed-in user", () => request("/auth/signin"), { status: 302, location: "/trips" }],
+  ["signup page redirects signed-in user", () => request("/auth/signup"), { status: 302, location: "/trips" }],
+  [
+    "signin page with trailing slash redirects signed-in user",
+    () => request("/auth/signin/"),
+    { status: 302, location: "/trips" },
+  ],
+  [
+    "signout after signup",
+    () => request("/api/auth/signout", { method: "POST" }),
+    { status: 302, location: "/auth/signin" },
   ],
   [
     "signin rejects wrong password",
@@ -51,11 +70,15 @@ const steps = [
   [
     "signin accepts correct password",
     () => request("/api/auth/signin", { method: "POST", form: { email, password } }),
-    { status: 302, location: "/" },
+    { status: 302, location: "/trips" },
   ],
-  ["dashboard renders for signed-in user", () => request("/dashboard"), { status: 200 }],
-  ["signout clears session", () => request("/api/auth/signout", { method: "POST" }), { status: 302, location: "/" }],
-  ["dashboard redirects after signout", () => request("/dashboard"), { status: 302, location: "/auth/signin" }],
+  ["trips renders for signed-in user", () => request("/trips"), { status: 200 }],
+  [
+    "signout clears session",
+    () => request("/api/auth/signout", { method: "POST" }),
+    { status: 302, location: "/auth/signin" },
+  ],
+  ["trips redirects after signout", () => request("/trips"), { status: 302, location: "/auth/signin" }],
 ];
 
 let failed = 0;

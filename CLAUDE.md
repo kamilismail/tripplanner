@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run format` — Prettier (includes prettier-plugin-astro + prettier-plugin-tailwindcss)
 - `npm run smoke` — dependency-free auth-flow smoke test (`scripts/smoke.mjs`) against a running server, `BASE_URL` env (default `http://localhost:4321`). Run after dependency upgrades; CI runs it against the production preview with a local Supabase.
 
-Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`, plus the UI literal scan (`lint:ui`) on the `/trips` view files.
+Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`, plus the UI literal scan (`lint:ui`) on the `/trips` view files, the auth screens and the kitchen sink (`src/pages/dev/*.astro`).
 
 No test suite exists yet — `smoke` is a sanity check for the starter itself, not application tests.
 
@@ -29,7 +29,8 @@ Full server-side rendering (`output: "server"` in `astro.config.mjs`). All pages
 - `src/middleware.ts` — runs on every request, resolves the current user, attaches to `context.locals.user`. Redirects unauthenticated users away from routes listed in `PROTECTED_ROUTES`.
 - API endpoints: `src/pages/api/auth/{signin,signup,signout}.ts`
 - Auth pages: `src/pages/auth/{signin,signup,confirm-email}.astro`
-- Protected page example: `src/pages/dashboard.astro`
+- Auth layout: signed-out pages render in `src/layouts/AuthLayout.astro` (card: `src/components/auth/AuthCard.astro`)
+- Protected page example: `src/pages/trips.astro`
 
 ### Key conventions
 
@@ -59,12 +60,12 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint + build on every 
 
 - Tokeny: src/styles/global.css (:root, .dark, @theme inline). Nowy kolor = nowy token, nigdy literał.
 - Komponenty: src/components/ui. Zanim napiszesz nowy, sprawdź ten katalog; brakujący dodaj z rejestru shadcn.
-- Wartości tokenów (`:root` w `global.css`) i ich uzasadnienie: `context/changes/app-layout-redesign/theme-values.md`. Zmiana wartości = aktualizacja tej tabeli (z kontrastem AA).
+- Wartości tokenów (`:root` w `global.css`) i ich uzasadnienie: `context/archive/2026-09-28-app-layout-redesign/theme-values.md`. Zmiana wartości = aktualizacja tej tabeli (z kontrastem AA).
 - Nowy komponent shadcn: `npx shadcn@latest add <name>`, nigdy `shadcn init` (nadpisałby tokeny i `components.json`).
 - W widokach zakaz literałów: hex/`rgb()`/`hsl()`/`oklch()`, klas palety Tailwind (`text-purple-300`, `bg-white`…) i wartości arbitralnych (`p-[12px]`, `ring-[3px]`). Tylko klasy tokenów (`bg-card`, `text-muted-foreground`, `ring-ring`) i warianty komponentów.
-- Strony dla zalogowanych renderuj w `src/layouts/AppLayout.astro` (nagłówek z nawigacją i wylogowaniem).
-- Bramka wizualna: `/dev/kitchen-sink` (tylko `npm run dev`, w produkcji 404) pokazuje 7 stanów widoku `/trips`. Nowy stan lub komponent widoku = nowa sekcja tam.
-- `npm run lint:ui` (`scripts/check-ui-literals.mjs`) skanuje widoki pod kątem literałów; pre-commit uruchamia go na zmienionych plikach `/trips`, `AppLayout`, `AppHeader` i `src/components/trips/*.tsx`.
+- Strony dla zalogowanych renderuj w `src/layouts/AppLayout.astro` (nagłówek z nawigacją i wylogowaniem), strony dla niezalogowanych (`/auth/*`) w `src/layouts/AuthLayout.astro`.
+- Bramka wizualna: `/dev/kitchen-sink` (tylko `npm run dev`, w produkcji 404) pokazuje 7 stanów widoku `/trips` i ekranów auth (formularze logowania i rejestracji, potwierdzenie e-maila, Banner). Nowy stan lub komponent widoku = nowa sekcja tam.
+- `npm run lint:ui` (`scripts/check-ui-literals.mjs`) skanuje widoki pod kątem literałów; pre-commit uruchamia go na zmienionych plikach `/trips`, `AppLayout`, `AppHeader`, `src/components/trips/*.tsx` oraz ekranów auth (`src/pages/index.ts`, `src/pages/auth/*.astro`, `AuthLayout`, `Layout`, `Banner`, `ConfigBanner`, `src/components/auth/*`), a także kitchen sink (`src/pages/dev/*.astro`).
 
 <!-- BEGIN @przeprogramowani/10x-cli -->
 

@@ -23,14 +23,34 @@ const PATTERN = new RegExp(
   "g",
 );
 
+// Guarded paths that no longer exist; reported so a rename cannot silently shrink coverage.
+const skipped = [];
+
+function listDir(dir, extensions) {
+  if (!existsSync(dir)) {
+    skipped.push(`${dir}/`);
+    return [];
+  }
+  return readdirSync(dir)
+    .filter((name) => extensions.some((ext) => name.endsWith(ext)))
+    .map((name) => join(dir, name).replaceAll("\\", "/"));
+}
+
 function defaultFiles() {
-  const tripsDir = "src/components/trips";
-  const tripComponents = existsSync(tripsDir)
-    ? readdirSync(tripsDir)
-        .filter((name) => name.endsWith(".tsx"))
-        .map((name) => join(tripsDir, name).replaceAll("\\", "/"))
-    : [];
-  return ["src/pages/trips.astro", "src/layouts/AppLayout.astro", "src/components/AppHeader.astro", ...tripComponents];
+  return [
+    "src/pages/trips.astro",
+    "src/layouts/AppLayout.astro",
+    "src/components/AppHeader.astro",
+    ...listDir("src/components/trips", [".tsx"]),
+    "src/pages/index.ts",
+    ...listDir("src/pages/auth", [".astro"]),
+    "src/layouts/AuthLayout.astro",
+    "src/layouts/Layout.astro",
+    "src/components/Banner.astro",
+    "src/components/ConfigBanner.astro",
+    ...listDir("src/components/auth", [".tsx", ".astro"]),
+    ...listDir("src/pages/dev", [".astro"]),
+  ];
 }
 
 const args = process.argv.slice(2).map((file) => file.replaceAll("\\", "/"));
@@ -39,10 +59,17 @@ if (missing.length) {
   console.error(`Missing file(s): ${missing.join(", ")}`);
   process.exit(2);
 }
-// Default files that do not exist yet are skipped; explicit arguments must exist.
-const files = (args.length ? args : defaultFiles().filter((file) => existsSync(file))).filter(
-  (file) => !file.endsWith(TOKEN_SOURCE),
-);
+// Default files that do not exist are skipped with a warning; explicit arguments must exist.
+let candidates = args;
+if (!args.length) {
+  candidates = defaultFiles();
+  skipped.push(...candidates.filter((file) => !existsSync(file)));
+  candidates = candidates.filter((file) => existsSync(file));
+  if (skipped.length) {
+    console.warn(`Warning: skipped (missing) guarded path(s): ${skipped.join(", ")}. Update defaultFiles().`);
+  }
+}
+const files = candidates.filter((file) => !file.endsWith(TOKEN_SOURCE));
 
 let hits = 0;
 for (const file of files) {

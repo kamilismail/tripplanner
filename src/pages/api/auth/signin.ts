@@ -1,10 +1,21 @@
+import { z } from "zod";
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 
+export const prerender = false;
+
+const signInSchema = z.object({
+  email: z.string({ error: "Email is required" }).trim().pipe(z.email("Enter a valid email address")),
+  password: z.string({ error: "Password is required" }).min(1, "Password is required"),
+});
+
 export const POST: APIRoute = async (context) => {
   const form = await context.request.formData();
-  const email = form.get("email") as string;
-  const password = form.get("password") as string;
+  const parsed = signInSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) {
+    return context.redirect(`/auth/signin?error=${encodeURIComponent(parsed.error.issues[0].message)}`);
+  }
+  const { email, password } = parsed.data;
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
@@ -16,5 +27,5 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(`/auth/signin?error=${encodeURIComponent(error.message)}`);
   }
 
-  return context.redirect("/");
+  return context.redirect("/trips");
 };

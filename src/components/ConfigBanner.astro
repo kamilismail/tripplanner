@@ -1,0 +1,25 @@
+---
+// The missing-config warning for one config entry. Layout.astro renders it above every page;
+// the kitchen sink renders it as the "Missing config" state, so both always show the same markup.
+import Banner from "@/components/Banner.astro";
+import type { ConfigStatus } from "@/lib/config-status";
+
+interface Props {
+  config: ConfigStatus;
+}
+
+const { config } = Astro.props;
+---
+
+<Banner>
+  <strong>Warning:</strong> {config.message}
+  {config.docsUrl && (
+    <>
+      {" "}
+      <a href={config.docsUrl} target="_blank" rel="noopener noreferrer" class="font-semibold underline">
+        {config.docsLabel ?? "Documentation"}
+      </a>
+      .
+    </>
+  )}
+</Banner>

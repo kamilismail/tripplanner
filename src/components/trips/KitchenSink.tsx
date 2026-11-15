@@ -87,8 +87,10 @@ function fixtureTrips(section: string): TripWithPoints[] {
 }
 
 const LIST_ERROR = "We couldn't load your trips. Please try again.";
+const SESSION_EXPIRED = "Your session has expired. Please sign in again.";
 
-function Cell({ label, children, id }: { label: string; children: React.ReactNode; id?: string }) {
+// Shared with the auth kitchen sink (src/components/auth/AuthKitchenSink.tsx and src/pages/dev/kitchen-sink.astro).
+export function Cell({ label, children, id }: { label: string; children: React.ReactNode; id?: string }) {
   return (
     <Card id={id} className="scroll-mt-20 gap-4">
       <CardHeader>
@@ -99,7 +101,7 @@ function Cell({ label, children, id }: { label: string; children: React.ReactNod
   );
 }
 
-function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
+export function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
   return (
     <section className="space-y-4">
       <div>
@@ -136,7 +138,8 @@ export default function KitchenSink() {
       <div>
         <h1 className="text-foreground text-2xl font-semibold">Kitchen sink</h1>
         <p className="text-muted-foreground text-sm">
-          Every state of the /trips view from fixtures. Hover and Tab through the controls to check hover and focus.
+          Every state of the /trips view and the auth screens from fixtures. Hover and Tab through the controls to check
+          hover and focus.
         </p>
       </div>
 
@@ -215,6 +218,17 @@ export default function KitchenSink() {
             error="We couldn't generate a plan for that city. Check the city name or try again."
           />
         </Cell>
+        <Cell label="Session expired">
+          <GeneratorForm
+            {...formBase}
+            city={REQUEST.city}
+            dayCount={String(REQUEST.day_count)}
+            canSubmit
+            submitted={REQUEST}
+            error={SESSION_EXPIRED}
+            sessionExpired
+          />
+        </Cell>
         <Cell label="Success">
           <GeneratorForm {...formBase} city="" dayCount="" successMessage="Your 2-day trip to Kraków has been saved." />
         </Cell>
@@ -236,6 +250,16 @@ export default function KitchenSink() {
             onDiscard={noop}
           />
         </Cell>
+        <Cell label="Session expired">
+          <PlanReview
+            plan={PLAN}
+            isSaving={false}
+            saveError={SESSION_EXPIRED}
+            sessionExpired
+            onAccept={noop}
+            onDiscard={noop}
+          />
+        </Cell>
       </Section>
 
       <Section title="Trip list">
@@ -244,6 +268,9 @@ export default function KitchenSink() {
         </Cell>
         <Cell label="Error (first load)">
           <TripList trips={null} isLoading={false} error={LIST_ERROR} onRetry={noop} />
+        </Cell>
+        <Cell label="Session expired">
+          <TripList trips={null} isLoading={false} error={SESSION_EXPIRED} sessionExpired onRetry={noop} />
         </Cell>
         <Cell label="Empty">
           <TripList trips={[]} isLoading={false} error={null} onRetry={noop} />

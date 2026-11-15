@@ -1,13 +1,15 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
 
-const PROTECTED_ROUTES = ["/dashboard", "/trips", "/api/trips"];
+const PROTECTED_ROUTES = ["/trips", "/api/trips"];
+// Pages a signed-in user has no use for; exact paths, so /api/auth/* (the form POST targets) is never caught.
+const GUEST_ONLY_ROUTES = ["/auth/signin", "/auth/signup"];
 // Dev-only fixture pages (e.g. /dev/kitchen-sink): SSR would otherwise ship them to production.
 const DEV_ONLY_PREFIX = "/dev/";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   if (!import.meta.env.DEV && context.url.pathname.startsWith(DEV_ONLY_PREFIX)) {
-    return new Response(null, { status: 404 });
+    return context.rewrite("/404");
   }
 
   const supabase = createClient(context.request.headers, context.cookies);
@@ -21,10 +23,17 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.user = null;
   }
 
-  if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {
+  // Runs after the user is resolved: the redirect depends on the session.
+  const normalizedPath =
+    context.url.pathname.length > 1 ? context.url.pathname.replace(/\/+$/, "") : context.url.pathname;
+  if (context.locals.user && GUEST_ONLY_ROUTES.includes(normalizedPath)) {
+    return context.redirect("/trips");
+  }
+
+  if (PROTECTED_ROUTES.some((route) => normalizedPath.startsWith(route))) {
     if (!context.locals.user) {
       // API callers use fetch, which would silently follow a redirect to the HTML sign-in page.
-      if (context.url.pathname.startsWith("/api/")) {
+      if (normalizedPath.startsWith("/api/")) {
         return new Response(JSON.stringify({ error: "unauthorized" }), {
           status: 401,
           headers: { "Content-Type": "application/json" },
