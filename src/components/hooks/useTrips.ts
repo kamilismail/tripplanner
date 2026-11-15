@@ -39,7 +39,7 @@ export function useTrips(): UseTripsResult {
         const response = await fetch("/api/trips", { signal: controller.signal });
         if (controller.signal.aborted) return;
 
-        // A redirect means the session expired and we landed on the sign-in page.
+        // Middleware answers /api/* without a session with JSON 401; a redirect is treated the same, defensively.
         if (response.redirected || !response.ok) {
           const status = response.redirected ? 401 : response.status;
           setError(fetchErrorMessage(status));

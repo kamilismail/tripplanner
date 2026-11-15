@@ -1,15 +1,15 @@
 import { z } from "zod";
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
+import { MIN_PASSWORD_LENGTH } from "@/lib/auth";
 
 export const prerender = false;
 
-// Matches MIN_PASSWORD_LENGTH in src/components/auth/SignUpForm.tsx.
-const MIN_PASSWORD_LENGTH = 6;
-
 const signUpSchema = z.object({
-  email: z.string().trim().pipe(z.email("Enter a valid email address")),
-  password: z.string().min(MIN_PASSWORD_LENGTH, `Password must be at least ${MIN_PASSWORD_LENGTH} characters`),
+  email: z.string({ error: "Email is required" }).trim().pipe(z.email("Enter a valid email address")),
+  password: z
+    .string({ error: "Password is required" })
+    .min(MIN_PASSWORD_LENGTH, `Password must be at least ${MIN_PASSWORD_LENGTH} characters`),
 });
 
 export const POST: APIRoute = async (context) => {

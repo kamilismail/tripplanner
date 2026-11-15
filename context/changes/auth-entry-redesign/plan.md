@@ -605,18 +605,18 @@ request.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Type check passes: `npx astro check`
-- [x] 1.3 Build passes: `npm run build`
-- [x] 1.4 UI literal scan (current defaults) passes: `npm run lint:ui`
-- [x] 1.5 Smoke passes against the dev server with local Supabase: `npm run smoke`
-- [x] 1.6 No references remain: `grep -rn "dashboard\|Welcome\|Topbar" src scripts` returns nothing
+- [x] 1.1 Lint passes: `npm run lint` — 3f444cd
+- [x] 1.2 Type check passes: `npx astro check` — 3f444cd
+- [x] 1.3 Build passes: `npm run build` — 3f444cd
+- [x] 1.4 UI literal scan (current defaults) passes: `npm run lint:ui` — 3f444cd
+- [x] 1.5 Smoke passes against the dev server with local Supabase: `npm run smoke` — 3f444cd
+- [x] 1.6 No references remain: `grep -rn "dashboard\|Welcome\|Topbar" src scripts` returns nothing — 3f444cd
 
 #### Manual
 
-- [x] 1.7 In the browser: `/` signed out lands on sign-in; sign-up with a new account lands on `/trips` signed in; the header sign-out lands on sign-in; `/auth/signin` while signed in lands on `/trips`
-- [x] 1.8 An expired or cleared session on `/trips` shows the session-expired error with a working "Sign in" link
-- [x] 1.9 Hosted Supabase "Confirm email" is disabled in the dashboard (Authentication → Providers → Email), or the user accepts that production sign-up falls back to "Check your email"
+- [x] 1.7 In the browser: `/` signed out lands on sign-in; sign-up with a new account lands on `/trips` signed in; the header sign-out lands on sign-in; `/auth/signin` while signed in lands on `/trips` — 3f444cd
+- [x] 1.8 An expired or cleared session on `/trips` shows the session-expired error with a working "Sign in" link — 3f444cd
+- [x] 1.9 Hosted Supabase "Confirm email" is disabled in the dashboard (Authentication → Providers → Email), or the user accepts that production sign-up falls back to "Check your email" — 3f444cd
 
 ### Phase 2: Auth screens on the UI contract
 

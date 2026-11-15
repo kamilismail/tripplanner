@@ -68,7 +68,7 @@ export default function PlanReview({
           <X className="size-4" />
           Discard
         </Button>
-        <Button type="button" onClick={onAccept} disabled={isSaving}>
+        <Button type="button" onClick={onAccept} disabled={isSaving || sessionExpired}>
           {isSaving ? <Spinner /> : <Check className="size-4" />}
           {isSaving ? "Saving..." : "Accept"}
         </Button>

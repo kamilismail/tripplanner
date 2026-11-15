@@ -38,6 +38,7 @@ async function request(path, { method = "GET", form } = {}) {
 const steps = [
   ["home redirects anonymous user to sign-in", () => request("/"), { status: 302, location: "/auth/signin" }],
   ["trips redirects anonymous user", () => request("/trips"), { status: 302, location: "/auth/signin" }],
+  ["trips API rejects anonymous user", () => request("/api/trips"), { status: 401 }],
   [
     "signup rejects invalid email",
     () => request("/api/auth/signup", { method: "POST", form: { email: "not-an-email", password } }),

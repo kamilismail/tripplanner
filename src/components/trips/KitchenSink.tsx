@@ -216,6 +216,17 @@ export default function KitchenSink() {
             error="We couldn't generate a plan for that city. Check the city name or try again."
           />
         </Cell>
+        <Cell label="Session expired">
+          <GeneratorForm
+            {...formBase}
+            city={REQUEST.city}
+            dayCount={String(REQUEST.day_count)}
+            canSubmit
+            submitted={REQUEST}
+            error={SESSION_EXPIRED}
+            sessionExpired
+          />
+        </Cell>
         <Cell label="Success">
           <GeneratorForm {...formBase} city="" dayCount="" successMessage="Your 2-day trip to Kraków has been saved." />
         </Cell>
@@ -233,6 +244,16 @@ export default function KitchenSink() {
             plan={PLAN}
             isSaving={false}
             saveError="We couldn't save your trip. Please try again."
+            onAccept={noop}
+            onDiscard={noop}
+          />
+        </Cell>
+        <Cell label="Session expired">
+          <PlanReview
+            plan={PLAN}
+            isSaving={false}
+            saveError={SESSION_EXPIRED}
+            sessionExpired
             onAccept={noop}
             onDiscard={noop}
           />

@@ -30,10 +30,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return context.redirect("/trips");
   }
 
-  if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {
+  if (PROTECTED_ROUTES.some((route) => normalizedPath.startsWith(route))) {
     if (!context.locals.user) {
       // API callers use fetch, which would silently follow a redirect to the HTML sign-in page.
-      if (context.url.pathname.startsWith("/api/")) {
+      if (normalizedPath.startsWith("/api/")) {
         return new Response(JSON.stringify({ error: "unauthorized" }), {
           status: 401,
           headers: { "Content-Type": "application/json" },
