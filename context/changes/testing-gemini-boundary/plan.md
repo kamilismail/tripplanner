@@ -319,13 +319,13 @@ None. Only a devDependency, config, tests, a CI step and docs are added; product
 
 #### Automated
 
-- [x] 4.1 `npm test` passes locally
-- [x] 4.2 `npm run lint`, `npx astro check` and `npm run build` pass
-- [x] 4.3 The `ci` job in `.github/workflows/ci.yml` contains an `npm test` step
+- [x] 4.1 `npm test` passes locally — b43bca0
+- [x] 4.2 `npm run lint`, `npx astro check` and `npm run build` pass — b43bca0
+- [x] 4.3 The `ci` job in `.github/workflows/ci.yml` contains an `npm test` step — b43bca0
 
 #### Manual
 
-- [x] 4.4 Temporarily changing `MAX_UNAVAILABLE_RETRIES` to 2 (or removing the 503 retry) makes the retry tests fail; restoring it makes them pass
-- [x] 4.5 Temporarily removing the empty-candidate guard (`gemini.ts:146-148`) makes at least one service test fail; restoring it makes them pass
+- [x] 4.4 Temporarily changing `MAX_UNAVAILABLE_RETRIES` to 2 (or removing the 503 retry) makes the retry tests fail; restoring it makes them pass — b43bca0
+- [x] 4.5 Temporarily removing the empty-candidate guard (`gemini.ts:146-148`) makes at least one service test fail; restoring it makes them pass — b43bca0
 - [ ] 4.6 CI run on the branch is green including the new test step
-- [x] 4.7 `test-plan.md` §6.1, §6.2, §6.5 and §6.6 read as usable instructions for adding the next test
+- [x] 4.7 `test-plan.md` §6.1, §6.2, §6.5 and §6.6 read as usable instructions for adding the next test — b43bca0
