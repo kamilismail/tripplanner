@@ -291,29 +291,29 @@ None. Only a devDependency, config, tests, a CI step and docs are added; product
 
 #### Automated
 
-- [x] 2.1 `npm test` passes with all service scenarios present
-- [x] 2.2 Every scenario above has its own named test (no scenario shares a single always-valid stub)
-- [x] 2.3 Linting passes: `npm run lint`
-- [x] 2.4 Type check passes: `npx astro check`
+- [x] 2.1 `npm test` passes with all service scenarios present — 41a7ba6
+- [x] 2.2 Every scenario above has its own named test (no scenario shares a single always-valid stub) — 41a7ba6
+- [x] 2.3 Linting passes: `npm run lint` — 41a7ba6
+- [x] 2.4 Type check passes: `npx astro check` — 41a7ba6
 
 #### Manual
 
-- [x] 2.5 A reviewer confirms each test scripts its own response sequence and that no expected value is imported from `gemini.ts` or `itinerary-schema.ts`
-- [x] 2.6 Full suite runs in a few seconds, with no real waiting on retry delays
+- [x] 2.5 A reviewer confirms each test scripts its own response sequence and that no expected value is imported from `gemini.ts` or `itinerary-schema.ts` — 41a7ba6
+- [x] 2.6 Full suite runs in a few seconds, with no real waiting on retry delays — 41a7ba6
 
 ### Phase 3: Generate route tests
 
 #### Automated
 
-- [ ] 3.1 `npm test` passes with all route cases present
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Type check passes: `npx astro check`
-- [ ] 3.4 Production build still succeeds: `npm run build`
+- [x] 3.1 `npm test` passes with all route cases present
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Type check passes: `npx astro check`
+- [x] 3.4 Production build still succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 3.5 Reviewer confirms no test file lives under `src/pages/` and `npm run build` output has no stray test route
-- [ ] 3.6 Reviewer confirms each failure case asserts both the 502 body and the absence of Supabase calls
+- [x] 3.5 Reviewer confirms no test file lives under `src/pages/` and `npm run build` output has no stray test route
+- [x] 3.6 Reviewer confirms each failure case asserts both the 502 body and the absence of Supabase calls
 
 ### Phase 4: Gate and cookbook
 

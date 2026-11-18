@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { settle } from "../helpers/timers";
 import { geminiEnvelope, scriptFetch, validGeminiBody, type FetchStep } from "../helpers/gemini-stub";
 
 type GeminiModule = typeof import("@/lib/services/gemini");
@@ -8,22 +9,6 @@ async function loadService(apiKey: string | undefined): Promise<GeminiModule> {
   vi.resetModules();
   vi.doMock("astro:env/server", () => ({ GEMINI_API_KEY: apiKey }));
   return import("@/lib/services/gemini");
-}
-
-/** Resolves the call under test while stepping the fake clock through retry delays. */
-async function settle<T>(promise: Promise<T>) {
-  const state = { done: false };
-  const outcome = promise.then(
-    (value) => ({ ok: true as const, value }),
-    (error: unknown) => ({ ok: false as const, error }),
-  );
-  void outcome.finally(() => {
-    state.done = true;
-  });
-  while (!state.done) {
-    await vi.advanceTimersByTimeAsync(1_500);
-  }
-  return outcome;
 }
 
 const busy: FetchStep = { status: 503, body: { error: { message: "The model is overloaded." } } };
