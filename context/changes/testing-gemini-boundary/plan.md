@@ -291,15 +291,15 @@ None. Only a devDependency, config, tests, a CI step and docs are added; product
 
 #### Automated
 
-- [ ] 2.1 `npm test` passes with all service scenarios present
-- [ ] 2.2 Every scenario above has its own named test (no scenario shares a single always-valid stub)
-- [ ] 2.3 Linting passes: `npm run lint`
-- [ ] 2.4 Type check passes: `npx astro check`
+- [x] 2.1 `npm test` passes with all service scenarios present
+- [x] 2.2 Every scenario above has its own named test (no scenario shares a single always-valid stub)
+- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.4 Type check passes: `npx astro check`
 
 #### Manual
 
-- [ ] 2.5 A reviewer confirms each test scripts its own response sequence and that no expected value is imported from `gemini.ts` or `itinerary-schema.ts`
-- [ ] 2.6 Full suite runs in a few seconds, with no real waiting on retry delays
+- [x] 2.5 A reviewer confirms each test scripts its own response sequence and that no expected value is imported from `gemini.ts` or `itinerary-schema.ts`
+- [x] 2.6 Full suite runs in a few seconds, with no real waiting on retry delays
 
 ### Phase 3: Generate route tests
 
