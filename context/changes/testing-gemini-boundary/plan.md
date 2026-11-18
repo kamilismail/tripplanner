@@ -277,15 +277,15 @@ None. Only a devDependency, config, tests, a CI step and docs are added; product
 
 #### Automated
 
-- [x] 1.1 `npm test` passes and runs the smoke test
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Type check passes: `npx astro check`
-- [x] 1.4 Production build still succeeds: `npm run build`
+- [x] 1.1 `npm test` passes and runs the smoke test — 5c2f980
+- [x] 1.2 Linting passes: `npm run lint` — 5c2f980
+- [x] 1.3 Type check passes: `npx astro check` — 5c2f980
+- [x] 1.4 Production build still succeeds: `npm run build` — 5c2f980
 
 #### Manual
 
-- [x] 1.5 Removing the `astro:env/server` mock makes the smoke test fail (the test is not vacuous)
-- [x] 1.6 The chosen runner setup and any `astro:env` finding are written in the commit message for later use in the cookbook
+- [x] 1.5 Removing the `astro:env/server` mock makes the smoke test fail (the test is not vacuous) — 5c2f980
+- [x] 1.6 The chosen runner setup and any `astro:env` finding are written in the commit message for later use in the cookbook — 5c2f980
 
 ### Phase 2: Gemini service tests
 
