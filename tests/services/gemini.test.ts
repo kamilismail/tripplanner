@@ -24,6 +24,8 @@ describe("generateItinerary", () => {
 
   beforeEach(async () => {
     vi.useFakeTimers();
+    // Retry delay is 0.5-1.5 s; pin it so the clock arithmetic in the deadline test is exact.
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
     service = await loadService("test-key");
   });
 
@@ -76,6 +78,8 @@ describe("generateItinerary", () => {
       expect(fetchStub.calls).toBe(6);
     });
 
+    // Why 3 calls: each 503 costs 25 s, so after call 2 the clock is at ~51 s (retry still fits under 60 s);
+    // call 3 pushes it to ~76 s and the next retry is refused. Retry cap (6 calls) is never reached.
     it("stops retrying when the shared 60 s deadline would be exceeded", async () => {
       const slowBusy: FetchStep = { ...busy, onCall: () => vi.setSystemTime(Date.now() + 25_000) };
       const fetchStub = scriptFetch([slowBusy, slowBusy, slowBusy, slowBusy, slowBusy, slowBusy]);
@@ -90,6 +94,18 @@ describe("generateItinerary", () => {
   describe("upstream failures that are not retried", () => {
     it("treats a network error as upstream after a single call", async () => {
       const fetchStub = scriptFetch([{ throws: new TypeError("fetch failed") }]);
+
+      const outcome = await settle(service.generateItinerary("Paris", 1));
+
+      expectFailure(outcome, "upstream");
+      expect(fetchStub.calls).toBe(1);
+    });
+
+    it("treats a per-attempt timeout as upstream without retrying", async () => {
+      const fetchStub = scriptFetch([
+        { throws: new DOMException("The operation timed out.", "TimeoutError") },
+        { status: 200, body: validGeminiBody(1) },
+      ]);
 
       const outcome = await settle(service.generateItinerary("Paris", 1));
 
@@ -139,6 +155,12 @@ describe("generateItinerary", () => {
       {
         name: "a safety block (promptFeedback.blockReason, no candidates)",
         step: { status: 200, body: { promptFeedback: { blockReason: "SAFETY" } } },
+        days: 1,
+      },
+      { name: "a candidate without content", step: { status: 200, body: { candidates: [{}] } }, days: 1 },
+      {
+        name: "a candidate with empty parts",
+        step: { status: 200, body: { candidates: [{ content: { parts: [] } }] } },
         days: 1,
       },
       { name: "an empty-string candidate text", step: { status: 200, body: geminiEnvelope("") }, days: 1 },

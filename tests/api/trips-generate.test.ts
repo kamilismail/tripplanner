@@ -11,10 +11,14 @@ interface LoadedRoute {
 }
 
 /** Fresh import of the route with the key and Supabase mocked. */
-async function loadRoute(options: { failServiceWith?: Error } = {}): Promise<LoadedRoute> {
+async function loadRoute(options: { failServiceWith?: Error; apiKey?: string | undefined } = {}): Promise<LoadedRoute> {
+  const apiKey = "apiKey" in options ? options.apiKey : "test-key";
   vi.resetModules();
-  vi.doMock("astro:env/server", () => ({ GEMINI_API_KEY: "test-key" }));
-  const createClient = vi.fn();
+  vi.doMock("astro:env/server", () => ({ GEMINI_API_KEY: apiKey }));
+  // Any attempt to open a Supabase client during generation is a persistence regression.
+  const createClient = vi.fn(() => {
+    throw new Error("Supabase client must not be created while generating a plan");
+  });
   vi.doMock("@/lib/supabase", () => ({ createClient }));
   if (options.failServiceWith) {
     const failure = options.failServiceWith;
@@ -30,7 +34,18 @@ async function loadRoute(options: { failServiceWith?: Error } = {}): Promise<Loa
 function makeContext(options: { user?: boolean; body?: unknown; rawBody?: string }): RouteContext {
   const raw = options.rawBody ?? JSON.stringify(options.body);
   return {
-    locals: { user: options.user === false ? null : { id: "user-1" } },
+    locals: {
+      user: options.user === false ? null : { id: "user-1" },
+      // Fails the test on any access, e.g. a future locals.supabase.from("trips").insert(...).
+      supabase: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error("locals.supabase must not be used while generating a plan");
+          },
+        },
+      ),
+    },
     request: new Request("http://localhost/api/trips/generate", { method: "POST", body: raw }),
   } as unknown as RouteContext;
 }
@@ -88,7 +103,11 @@ describe("POST /api/trips/generate", () => {
     it.each([
       { name: "an empty city", body: { city: "", day_count: 2 } },
       { name: "a whitespace-only city", body: { city: "   ", day_count: 2 } },
+      { name: "a city of 101 characters", body: { city: "a".repeat(101), day_count: 2 } },
       { name: "day_count 0", body: { city: "Paris", day_count: 0 } },
+      { name: "day_count 15", body: { city: "Paris", day_count: 15 } },
+      { name: "a fractional day_count", body: { city: "Paris", day_count: 2.5 } },
+      { name: "a string day_count", body: { city: "Paris", day_count: "2" } },
     ])("returns 400 invalid_input for $name", async ({ body }) => {
       const fetchStub = scriptFetch([{ status: 200, body: validGeminiBody(2) }]);
 
@@ -119,6 +138,18 @@ describe("POST /api/trips/generate", () => {
         ],
       });
       expect(fetchStub.calls).toBe(1);
+      expectNothingPersisted(fetchStub);
+    });
+
+    it("trims the city in the 200 body", async () => {
+      const fetchStub = scriptFetch([{ status: 200, body: validGeminiBody(2) }]);
+
+      const response = await settle(route.POST(makeContext({ body: { city: "  Paris  ", day_count: 2 } })));
+
+      expect(response.ok).toBe(true);
+      if (!response.ok) return;
+      expect(response.value.status).toBe(200);
+      expect(await response.value.json()).toMatchObject({ city: "Paris", day_count: 2 });
       expectNothingPersisted(fetchStub);
     });
 
@@ -180,6 +211,22 @@ describe("POST /api/trips/generate", () => {
       expect(body).toEqual({ error: "generation_failed" });
       expect(body).not.toHaveProperty("days");
       expect(fetchStub.calls).toBe(calls);
+      expectNothingPersisted(fetchStub);
+    });
+  });
+
+  describe("missing configuration", () => {
+    it("returns 502 generation_failed without calling Gemini when the API key is missing", async () => {
+      route = await loadRoute({ apiKey: undefined });
+      const fetchStub = scriptFetch([{ status: 200, body: validGeminiBody(2) }]);
+
+      const response = await settle(route.POST(makeContext({ body: validRequest })));
+
+      expect(response.ok).toBe(true);
+      if (!response.ok) return;
+      expect(response.value.status).toBe(502);
+      expect(await response.value.json()).toEqual({ error: "generation_failed" });
+      expect(fetchStub.calls).toBe(0);
       expectNothingPersisted(fetchStub);
     });
   });

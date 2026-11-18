@@ -38,8 +38,8 @@ tripplanner is an Astro 7 SSR web app (React 19 islands, Tailwind 4, Supabase au
 
 ## Commit & Pull Request Guidelines
 
-- Repository has a single initial commit — no message convention established yet; use a short, imperative summary line.
-- CI (`@.github/workflows/ci.yml`) runs `lint`, `npm test`, `astro check`, and `build` on every push/PR to `master`, plus a `smoke` job against a local Supabase instance — both must pass before merging.
+- Use a short, imperative summary line for commit messages (Conventional Commits, e.g. `feat(<change-id>): ...`, in the change workflow).
+- CI (`@.github/workflows/ci.yml`) runs `lint`, `npm test`, `astro check`, and `build` on every push/PR to `main`, plus a `smoke` job against a local Supabase instance — both must pass before merging.
 
 ## Security & Configuration Tips
 

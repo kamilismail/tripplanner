@@ -329,3 +329,7 @@ None. Only a devDependency, config, tests, a CI step and docs are added; product
 - [x] 4.5 Temporarily removing the empty-candidate guard (`gemini.ts:146-148`) makes at least one service test fail; restoring it makes them pass — b43bca0
 - [x] 4.6 CI run on the branch is green including the new test step — 0b94eab
 - [x] 4.7 `test-plan.md` §6.1, §6.2, §6.5 and §6.6 read as usable instructions for adding the next test — b43bca0
+
+## Addendum
+
+- Step 4.5 as worded (removing the empty-candidate guard at `gemini.ts:146-148` turns a test red) cannot hold: without the guard `JSON.parse(undefined)` / `JSON.parse("")` throws and maps to the same `invalid_response`. It was verified instead by removing the `city_recognized` check (1 test red) and the day-count check (3 tests red). See test-plan §6.6.
