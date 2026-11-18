@@ -1,10 +1,10 @@
 ---
 change_id: testing-gemini-boundary
 title: Test runner and Gemini boundary tests
-status: impl_reviewed
+status: archived
 created: 2026-11-18
 updated: 2026-11-18
-archived_at: null
+archived_at: 2026-11-18T15:54:33Z
 ---
 
 ## Notes
