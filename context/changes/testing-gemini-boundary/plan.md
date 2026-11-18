@@ -305,27 +305,27 @@ None. Only a devDependency, config, tests, a CI step and docs are added; product
 
 #### Automated
 
-- [x] 3.1 `npm test` passes with all route cases present
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Type check passes: `npx astro check`
-- [x] 3.4 Production build still succeeds: `npm run build`
+- [x] 3.1 `npm test` passes with all route cases present — a626695
+- [x] 3.2 Linting passes: `npm run lint` — a626695
+- [x] 3.3 Type check passes: `npx astro check` — a626695
+- [x] 3.4 Production build still succeeds: `npm run build` — a626695
 
 #### Manual
 
-- [x] 3.5 Reviewer confirms no test file lives under `src/pages/` and `npm run build` output has no stray test route
-- [x] 3.6 Reviewer confirms each failure case asserts both the 502 body and the absence of Supabase calls
+- [x] 3.5 Reviewer confirms no test file lives under `src/pages/` and `npm run build` output has no stray test route — a626695
+- [x] 3.6 Reviewer confirms each failure case asserts both the 502 body and the absence of Supabase calls — a626695
 
 ### Phase 4: Gate and cookbook
 
 #### Automated
 
-- [ ] 4.1 `npm test` passes locally
-- [ ] 4.2 `npm run lint`, `npx astro check` and `npm run build` pass
-- [ ] 4.3 The `ci` job in `.github/workflows/ci.yml` contains an `npm test` step
+- [x] 4.1 `npm test` passes locally
+- [x] 4.2 `npm run lint`, `npx astro check` and `npm run build` pass
+- [x] 4.3 The `ci` job in `.github/workflows/ci.yml` contains an `npm test` step
 
 #### Manual
 
-- [ ] 4.4 Temporarily changing `MAX_UNAVAILABLE_RETRIES` to 2 (or removing the 503 retry) makes the retry tests fail; restoring it makes them pass
-- [ ] 4.5 Temporarily removing the empty-candidate guard (`gemini.ts:146-148`) makes at least one service test fail; restoring it makes them pass
+- [x] 4.4 Temporarily changing `MAX_UNAVAILABLE_RETRIES` to 2 (or removing the 503 retry) makes the retry tests fail; restoring it makes them pass
+- [x] 4.5 Temporarily removing the empty-candidate guard (`gemini.ts:146-148`) makes at least one service test fail; restoring it makes them pass
 - [ ] 4.6 CI run on the branch is green including the new test step
-- [ ] 4.7 `test-plan.md` §6.1, §6.2, §6.5 and §6.6 read as usable instructions for adding the next test
+- [x] 4.7 `test-plan.md` §6.1, §6.2, §6.5 and §6.6 read as usable instructions for adding the next test

@@ -9,11 +9,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run preview` — preview production build
 - `npm run lint` / `npm run lint:fix` — ESLint (type-checked rules)
 - `npm run format` — Prettier (includes prettier-plugin-astro + prettier-plugin-tailwindcss)
+- `npm test` — Vitest suite in `tests/` (plain Node; `astro:env/server` mocked, global `fetch` stubbed at the Gemini edge). Test files go in `tests/`, never `src/pages/`; see `context/foundation/test-plan.md` §6.
 - `npm run smoke` — dependency-free auth-flow smoke test (`scripts/smoke.mjs`) against a running server, `BASE_URL` env (default `http://localhost:4321`). Run after dependency upgrades; CI runs it against the production preview with a local Supabase.
 
 Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`, plus the UI literal scan (`lint:ui`) on the `/trips` view files, the auth screens and the kitchen sink (`src/pages/dev/*.astro`).
 
-No test suite exists yet — `smoke` is a sanity check for the starter itself, not application tests.
+`npm test` runs the application tests; `smoke` remains the sanity check of the auth flow.
 
 ## Architecture
 

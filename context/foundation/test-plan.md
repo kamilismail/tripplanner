@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-11-18
+> Last updated: 2026-11-18 (Phase 1 shipped)
 
 ## 1. Strategy
 
@@ -71,7 +71,7 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|------------|-----------------|---------------|------------|--------|---------------|
-| 1 | Test runner + Gemini boundary | Set up the test runner; prove Gemini failures end in a clear error, not a silent break | #1 | integration (stubbed Gemini client) | planned | context/changes/testing-gemini-boundary/ |
+| 1 | Test runner + Gemini boundary | Set up the test runner; prove Gemini failures end in a clear error, not a silent break | #1 | integration (stubbed Gemini client) | complete | context/changes/testing-gemini-boundary/ |
 | 2 | Plan persistence | Prove an accepted plan lands in the database whole and is never overwritten | #2 | integration (local Supabase) | not started | — |
 | 3 | Data isolation, auth and abuse | Prove account B cannot touch account A's plans, routes are protected, input is validated | #3, #4, #5 | integration, extended smoke | not started | — |
 | 4 | Quality-gates wiring | Lock the floor: tests in CI and pre-commit, secret check on the bundle | #6 + hardening of #1–#5 | gates | not started | — |
@@ -81,14 +81,14 @@ enough signal for these risks, and a vision model would add none.
 
 ## 4. Stack
 
-Detected state: **none** — no test runner config and no application test
-files. The only check is `npm run smoke` (sign-in flow, `scripts/smoke.mjs`).
-The `.claude/skills/*` tests do not cover the application.
+Detected state: Vitest suite in `tests/` (rollout Phase 1) plus `npm run smoke`
+(sign-in flow, `scripts/smoke.mjs`). The `.claude/skills/*` tests do not cover
+the application.
 
 | Layer | Tool | Version | Notes |
 |-------|------|---------|-------|
-| unit + integration | none yet — see §3 Phase 1 | — | Runner choice made in Phase 1 research (Astro + Cloudflare workerd runtime) |
-| API mocking | none yet — see §3 Phase 1 | — | Only at the Gemini network edge |
+| unit + integration | Vitest (`npm test`) | 5.1.1 | Plain Node, `vitest.config.ts`, files in `tests/**/*.test.ts`. No workerd pool: logic under test does not need it |
+| API mocking | `vi.stubGlobal("fetch")` via `tests/helpers/gemini-stub.ts` | — | Only at the Gemini network edge; no msw |
 | database integration | local Supabase (`npx supabase start`) | — | Needs Docker; already used by CI smoke job |
 | e2e | none yet | — | Not planned; integration and `smoke` are cheaper |
 | smoke | `scripts/smoke.mjs` (`npm run smoke`) | — | Auth flow only |
@@ -107,7 +107,7 @@ The `.claude/skills/*` tests do not cover the application.
 | lint + typecheck | local + CI | required (already wired) | syntactic / type drift |
 | UI literal scan (`lint:ui`) | pre-commit | required (already wired) | design-token violations |
 | auth smoke (`npm run smoke`) | CI | required (already wired) | broken sign-in flow |
-| unit + integration | local + CI | required after §3 Phase 1 | logic regressions |
+| unit + integration (`npm test`) | local + CI (`ci` job) | required (wired in §3 Phase 1) | logic regressions |
 | data isolation + persistence tests | CI | required after §3 Phase 3 | cross-user access, lost plans |
 | tests in pre-commit | local | recommended after §3 Phase 4 | regressions before commit |
 | bundle secret scan | CI | required after §3 Phase 4 | secret leakage |
@@ -119,12 +119,15 @@ the relevant rollout phase ships; before that, it reads "TBD".
 
 ### 6.1 Adding a unit test
 
-- TBD — see §3 Phase 1 (runner setup and location convention).
+- Runner: Vitest, plain Node (`vitest.config.ts`: `@` → `src`, `include: tests/**/*.test.ts`). Run `npm test`.
+- Location: top-level `tests/` mirroring the code (`tests/services/`, `tests/api/`, `tests/helpers/`). Never under `src/pages/` — every file there becomes a route.
+- `astro:env/server` does not exist outside Astro: mock it per file. Use `vi.resetModules()` + `vi.doMock("astro:env/server", () => ({ GEMINI_API_KEY: ... }))` before a dynamic `import("@/...")`, so each test controls the value (including `undefined`).
+- Expected values are literals written from the contract, never imported from production constants or schemas (oracle problem).
 
 ### 6.2 Adding an integration test
 
-- TBD — see §3 Phase 1 for the Gemini-failure pattern (busy / empty / malformed
-  response) and §3 Phase 2 for the persistence pattern against local Supabase.
+- Gemini-failure pattern (route level): `tests/api/trips-generate.test.ts`. Import the exported `POST` and call it with a minimal fake context (`{ locals: { user }, request }` cast to `APIRoute`'s argument). Mock `@/lib/supabase` and assert `createClient` is never called; assert every `fetch` URL is the Gemini endpoint ("nothing persisted").
+- Persistence pattern against local Supabase: TBD — see §3 Phase 2.
 
 ### 6.3 Adding an e2e test
 
@@ -137,12 +140,22 @@ the relevant rollout phase ships; before that, it reads "TBD".
 
 ### 6.5 Adding a test for AI-response handling
 
-- TBD — see §3 Phase 1 (stubbed Gemini client; expected values from the
-  contract, not copied from implementation).
+- Stub only global `fetch`, with `scriptFetch(steps)` from `tests/helpers/gemini-stub.ts`: an ordered list of `{ status, body }` / `{ throws }` steps. A call beyond the script rejects and still counts, so always assert the exact `calls` count. Never use an always-valid stub; each test scripts its own sequence.
+- Fixtures: `validGeminiBody(days)` and `geminiEnvelope(text)` are hand-written, not built from `itinerarySchema`.
+- Retry/deadline logic: `vi.useFakeTimers()` and drive the call with `settle()` from `tests/helpers/timers.ts` (steps the fake clock through retry delays). A step's `onCall` can advance the fake clock (`vi.setSystemTime(Date.now() + 25_000)`) to test the shared deadline. Do not rely on `AbortSignal.timeout`.
+- Cause (`upstream` vs `invalid_response`) and retry counts are observable only at service level (`tests/services/gemini.test.ts`); route tests pin the user-visible contract (502 `generation_failed`, no `days`).
 
 ### 6.6 Per-rollout-phase notes
 
 (Optional. Appended after each phase lands.)
+
+**Phase 1 — Test runner + Gemini boundary** (`context/changes/testing-gemini-boundary/`)
+
+- Plain Vitest imports `src/lib/services/gemini.ts` fine; no `getViteConfig()` fallback was needed.
+- Pinned behavior: only HTTP 503 is retried (max 6 calls, shared 60 s deadline); network error, 429 and 500 are not retried.
+- The empty-candidate guard in `gemini.ts` is behaviorally redundant: without it `JSON.parse(undefined)` throws and is mapped to the same `invalid_response`. Do not expect a test to catch its removal.
+- `finishReason` is still unread by production code (product question, undecided).
+- On Windows with `core.autocrlf=true`, `npm run lint` reports CRLF (`Delete ␍`) on every file; CI (LF) is unaffected.
 
 ## 7. What We Deliberately Don't Test
 
