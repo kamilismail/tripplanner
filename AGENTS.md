@@ -21,6 +21,7 @@ tripplanner is an Astro 7 SSR web app (React 19 islands, Tailwind 4, Supabase au
 - `npm run dev` — start dev server (Cloudflare workerd runtime).
 - `npm run build` / `npm run preview` — production build / preview it.
 - `npm run lint` / `npm run lint:fix` — type-checked ESLint.
+- `npm test` — Vitest suite (`tests/**/*.test.ts`, plain Node, no server or Supabase needed).
 - `npm run smoke` — auth-flow smoke test against a running server (`BASE_URL`, default `http://localhost:4321`).
 
 ## Coding Style & Naming Conventions
@@ -32,12 +33,13 @@ tripplanner is an Astro 7 SSR web app (React 19 islands, Tailwind 4, Supabase au
 
 ## Testing Guidelines
 
-- No unit/integration test suite exists yet. `npm run smoke` (`scripts/smoke.mjs`) is a dependency-free sanity check of the auth flow (sign-up, sign-in, protected page, sign-out) — run after dependency upgrades, not as a substitute for real tests.
+- Application tests: Vitest, `npm test`. Put them in top-level `tests/` (never under `src/pages/`, where files become routes); helpers in `tests/helpers/`. Mock `astro:env/server` with `vi.mock`/`vi.doMock`, stub only global `fetch` at the Gemini edge, use literal expected values. Pattern details: `context/foundation/test-plan.md` §6.
+- `npm run smoke` (`scripts/smoke.mjs`) stays a dependency-free sanity check of the auth flow (sign-up, sign-in, protected page, sign-out) — run after dependency upgrades.
 
 ## Commit & Pull Request Guidelines
 
-- Repository has a single initial commit — no message convention established yet; use a short, imperative summary line.
-- CI (`@.github/workflows/ci.yml`) runs `lint`, `astro check`, and `build` on every push/PR to `master`, plus a `smoke` job against a local Supabase instance — both must pass before merging.
+- Use a short, imperative summary line for commit messages (Conventional Commits, e.g. `feat(<change-id>): ...`, in the change workflow).
+- CI (`@.github/workflows/ci.yml`) runs `lint`, `npm test`, `astro check`, and `build` on every push/PR to `main`, plus a `smoke` job against a local Supabase instance — both must pass before merging.
 
 ## Security & Configuration Tips
 
